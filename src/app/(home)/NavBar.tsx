@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/logo_small.png";
+import logo from "@/assets/logo_small_2.svg";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import {
@@ -42,17 +42,46 @@ const whyKindiAI: { title: string; href: string; description: string }[] = [
   },
 ];
 
+const community: { title: string; href: string; description: string }[] = [
+  {
+    title: "Blog",
+    href: "/",
+    description:
+      "Stories about AI customer support, and building an open source AI project.",
+  },
+  {
+    title: "Documentation",
+    href: "/",
+    description: "The guide you need to easily understand how to use Kindi AI.",
+  },
+  {
+    title: "Github",
+    href: "/",
+    description:
+      "Track our development, inspect and review our code, open issues and contribute to our codebase.",
+  },
+  {
+    title: "Updates",
+    href: "/",
+    description:
+      "What's new updates in Kindi AI? We list major features releases.",
+  },
+];
+
 export default function NavBar() {
   return (
-    <div className="p-4 shadow">
-      <div className="m-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-        <Link href="/" className="flex items-center gap-3">
-          <Image src={logo} alt="Kindi AI Logo" width={40} height={40} />
-          <span className="text-lg  font-bold">Kindi AI</span>
+    <div className="z-30 p-4">
+      <div className="m-auto flex max-w-7xl flex-wrap items-center justify-around gap-3">
+        <Link
+          href="/"
+          className="flex flex-col items-center sm:flex-row sm:gap-2"
+        >
+          <Image src={logo} alt="Kindi AI Logo" width={45} height={45} />
+          <span className="pt-1 text-lg font-bold">Kindi AI</span>
         </Link>
         <Menu />
-        <div className="flex items-center gap-6">
-          <Link className=" text-gray-700 hover:text-gray-800" href="/sign-in">
+        <div className="flex items-center  gap-6">
+          <Link className="text-gray-700 hover:text-gray-800" href="/sign-in">
             Sign in
           </Link>
           <Button>
@@ -68,7 +97,7 @@ export default function NavBar() {
 
 function Menu() {
   return (
-    <NavigationMenu>
+    <NavigationMenu className="z-30">
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Why Kindi AI</NavigationMenuTrigger>
@@ -77,13 +106,13 @@ function Menu() {
               <li className="row-span-1">
                 <NavigationMenuLink asChild>
                   <a
-                    className="from-muted/50 to-muted flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b p-6 no-underline outline-none focus:shadow-md"
+                    className="flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                     href="/"
                   >
                     <div className="mb-2 mt-4 text-lg font-medium">
-                      {whyKindiAI[0].title}
+                      <p>{whyKindiAI[0].title}</p>
                     </div>
-                    <p className="text-muted-foreground text-sm leading-tight">
+                    <p className="text-sm leading-tight text-muted-foreground">
                       {whyKindiAI[0].description}
                     </p>
                   </a>
@@ -104,10 +133,10 @@ function Menu() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Why Kindi AI</NavigationMenuTrigger>
+          <NavigationMenuTrigger>Community</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {whyKindiAI.slice(1).map((element) => (
+            <ul className="grid gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+              {community.map((element) => (
                 <ListItem
                   key={element.title}
                   title={element.title}
@@ -122,7 +151,7 @@ function Menu() {
         <NavigationMenuItem>
           <Link href="/docs" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Documentation
+              Pricing
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
@@ -141,13 +170,13 @@ const ListItem = React.forwardRef<
         <a
           ref={ref}
           className={cn(
-            "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
             className,
           )}
           {...props}
         >
           <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="text-muted-foreground  text-sm leading-snug">
+          <p className="text-sm  leading-snug text-muted-foreground">
             {children}
           </p>
         </a>
