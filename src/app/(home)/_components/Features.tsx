@@ -3,7 +3,7 @@ import Feature from "./Feature";
 
 export default function Features() {
   return (
-    <div className="relative flex h-[90rem] w-full flex-col items-center  justify-center bg-white bg-grid-black/[0.2] dark:bg-black dark:bg-grid-white/[0.2] md:h-[70rem]">
+    <div className="relative flex h-[90rem] w-full flex-col items-center  justify-center bg-white bg-dot-blue-600/[0.6] dark:bg-black dark:bg-dot-blue-600/[0.6] md:h-[70rem]">
       {/* Radial gradient for the container to give a faded look */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
       <div className="flex flex-col items-center gap-20 ">
@@ -11,7 +11,7 @@ export default function Features() {
           background="transparent"
           minSize={0.6}
           maxSize={1}
-          particleDensity={1200}
+          particleDensity={500}
           className="absolute inset-0 h-full w-full"
           particleColor="#1E50D9"
         />
