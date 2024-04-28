@@ -1,11 +1,11 @@
-import { EvervaultCard, Icon } from "@/components/ui/evervault-card";
+import { Icon } from "@/components/ui/evervault-card";
 import Link from "next/link";
 
-export default function Feature() {
+export default function CTA() {
   return (
     <div>
       <div className="w-ful mt-8 flex w-screen justify-center bg-white font-mono text-sm bg-grid-black/[0.2] dark:bg-black dark:bg-grid-white/[0.2]">
-        <div className="relative mx-32 my-12 flex h-full w-screen flex-col items-start border border-black/[0.2] p-10  dark:border-white/[0.2]">
+        <div className="relative mx-32 my-12 flex h-full w-screen max-w-7xl flex-col items-start border border-black/[0.2] p-10  dark:border-white/[0.2]">
           <Icon className="absolute -left-3 -top-3 h-6 w-6 text-black dark:text-white" />
           <Icon className="absolute -bottom-3 -left-3 h-6 w-6 text-black dark:text-white" />
           <Icon className="absolute -right-3 -top-3 h-6 w-6 text-black dark:text-white" />
