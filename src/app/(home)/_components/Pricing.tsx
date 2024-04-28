@@ -186,7 +186,7 @@ export default function Pricing() {
     },
   ];
   return (
-    <div className="w-ful relative flex  items-center justify-center border border-black/[0.2] dark:border-white/[0.2]">
+    <div className="w-ful relative mt-8 flex items-center justify-center border border-black/[0.2] dark:border-white/[0.2]">
       <div className="relative flex w-full flex-col items-center justify-center bg-white bg-dot-black/[0.2] dark:bg-black dark:bg-dot-white/[0.2]">
         <Icon className="absolute -left-3 -top-3 h-6 w-6 text-black dark:text-white" />
         <Icon className="absolute -bottom-3 -left-3 h-6 w-6 text-black dark:text-white" />
