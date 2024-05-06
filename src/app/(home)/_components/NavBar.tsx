@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/logo_small_2.svg";
+import { signIn, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import {
@@ -81,9 +82,7 @@ export default function NavBar() {
         </Link>
         <Menu />
         <div className="flex items-center  gap-6">
-          <Link className="text-gray-700 hover:text-gray-800" href="/sign-in">
-            Sign in
-          </Link>
+          <Button onClick={() => signIn()}>Sign in</Button>
           <Button>
             <Link className="text" href="/sign-up">
               Sign up for free
