@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import GoogleButton from "@/components/ui/google-button";
 import {
   Form,
   FormControl,
@@ -18,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 const FormSchema = z.object({
-  username: z.string().min(2, {
+  name: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
   email: z
@@ -37,7 +36,7 @@ export default function FormPage() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       email: "",
-      username: "",
+      name: "",
       password: "",
     },
   });
@@ -45,7 +44,7 @@ export default function FormPage() {
   const onSubmit = async (data: FormData) => {
     console.log("Submitting form", data);
 
-    const { username: email, password } = data;
+    const { name, email, password } = data;
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -53,7 +52,7 @@ export default function FormPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -75,12 +74,12 @@ export default function FormPage() {
       >
         <FormField
           control={form.control}
-          name="username"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your username" {...field} />
+                <Input placeholder="Enter your full name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

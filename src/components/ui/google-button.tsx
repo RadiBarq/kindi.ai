@@ -1,9 +1,19 @@
+"use client";
+
 import { Button } from "./button";
 import "./styles/google-button-style.css";
+import { signIn } from "next-auth/react";
 
-export default function GoogleButton() {
+interface CarEntryProps {
+  providerId: string;
+}
+
+export default function GoogleButton({ providerId }: CarEntryProps) {
   return (
-    <Button className="flex w-72 max-w-md  items-center justify-center bg-black  lg:w-96">
+    <Button
+      onClick={() => signIn(providerId)}
+      className="flex w-72 max-w-md  items-center justify-center bg-black  lg:w-96"
+    >
       <div className="gsi-material-button-icon">
         <svg
           xmlns="http://www.w3.org/2000/svg"

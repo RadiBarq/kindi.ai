@@ -65,7 +65,9 @@ export default async function SignUp() {
               <div className="flex w-full flex-col items-center justify-center gap-4">
                 {Object.values(providers).map((provider) => (
                   <div key={provider.name} className="">
-                    {provider.name === "Google" && <GoogleButton />}
+                    {provider.name === "Google" && (
+                      <GoogleButton providerId={provider.id} />
+                    )}
                     {provider.name === "GitHub" && <GithubButton />}
                   </div>
                 ))}
