@@ -33,7 +33,7 @@ export default async function SignUp() {
       <div className="relative flex w-full  flex-col items-center justify-center gap-16 bg-white py-10 bg-grid-black/[0.2] dark:bg-black dark:bg-grid-white/[0.2]">
         <div className="pointer-events-none absolute inset-0 flex w-full items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_50%,black)] dark:bg-black"></div>
         <div className="mx-auto flex w-full flex-row flex-wrap-reverse items-center justify-center gap-12 px-10">
-          <div className="relative mx-auto  flex h-[30rem] max-w-xs flex-col items-start border border-black/[0.2] p-4 dark:border-white/[0.2] sm:max-w-sm md:max-w-md lg:max-w-lg">
+          <div className="relative mx-auto  flex h-[30rem] max-w-xs flex-col items-start border border-black/[0.2] p-4 dark:border-white/[0.2] sm:max-w-sm md:max-w-sm">
             <Icon className="absolute -left-3 -top-3 h-6 w-6 text-black dark:text-white" />
             <Icon className="absolute -bottom-3 -left-3 h-6 w-6 text-black dark:text-white" />
             <Icon className="absolute -right-3 -top-3 h-6 w-6 text-black dark:text-white" />
