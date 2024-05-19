@@ -84,7 +84,7 @@ export default function NavBar() {
         <div className="flex items-center  gap-6">
           <Button onClick={() => signIn()}>Sign in</Button>
           <Button>
-            <Link className="text" href="/sign-up">
+            <Link className="text" href="/auth/signup">
               Sign up for free
             </Link>
           </Button>
