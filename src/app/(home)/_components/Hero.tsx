@@ -14,7 +14,7 @@ export default function Hero() {
             <Icon className="absolute -bottom-3 -left-3 h-6 w-6 text-black dark:text-white" />
             <Icon className="absolute -right-3 -top-3 h-6 w-6 text-black dark:text-white" />
             <Icon className="absolute -bottom-3 -right-3 h-6 w-6 text-black dark:text-white" />
-            <EvervaultCard text="The new age of customer support copilot" />
+            <EvervaultCard text="The new age of customer support copilot is here" />
             <h2 className="mt-4 text-sm font-semibold text-gray-900 dark:text-white">
               Start your free trial
             </h2>

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -42,10 +43,13 @@ export default function FormPage() {
   });
 
   const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: FormData) => {
     console.log("Submitting form", data);
-
+    setLoading(true);
+    setError("");
     const { name, email, password } = data;
 
     try {
@@ -57,14 +61,23 @@ export default function FormPage() {
         body: JSON.stringify({ email, password, name }),
       });
       if (!response.ok) {
-        console.log(response);
-        throw new Error("Network response was not ok");
+        console.error(response);
+        const data = await response.json();
+        if (data.message) {
+          setError(data.message);
+        }
+        form.setValue("password", ""); // Clear the password field
+        return;
       }
       // Process response here
       console.log("Registration Successful", response);
       router.push("/dashboard");
     } catch (error: any) {
-      console.error("Registration Failed:", error);
+      console.error("An unexpected error happened: ", error);
+      setError("An unexpected error occurred.");
+      form.setValue("password", "");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -117,7 +130,13 @@ export default function FormPage() {
             </FormItem>
           )}
         />
-        <Button className="mx-auto w-48 bg-black" type="submit">
+        {error && <p className="text-red-500">{error}</p>}
+        <Button
+          className="mx-auto w-48 bg-black"
+          type="submit"
+          disabled={loading}
+        >
+          {loading && <span className="loading loading-spinner mr-2"></span>}
           Sign up
         </Button>
       </form>

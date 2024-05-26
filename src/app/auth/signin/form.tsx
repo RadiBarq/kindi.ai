@@ -14,8 +14,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
 
 const FormSchema = z.object({
   email: z
@@ -57,7 +57,7 @@ export default function FormPage() {
         body: JSON.stringify({ email, password }),
       });
       if (!response.ok) {
-        console.log(response);
+        console.error(response);
         const data = await response.json();
         setError(data.message);
         form.setValue("password", ""); // Clear the password field
@@ -117,7 +117,7 @@ export default function FormPage() {
           type="submit"
           disabled={loading}
         >
-          {loading && <span className="loading loading-spinner"></span>}
+          {loading && <span className="loading loading-spinner mr-2"></span>}
           Sign in
         </Button>
       </form>

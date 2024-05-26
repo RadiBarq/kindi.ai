@@ -8,6 +8,7 @@ import Image from "next/image";
 import logo from "@/assets/logo_small_2.svg";
 import GoogleButton from "@/components/ui/google-button";
 import GithubButton from "@/components/ui/github-button";
+import Footer from "@/app/(home)/_components/Footer";
 import FormPage from "./form";
 
 async function fetchProviders() {
@@ -77,6 +78,9 @@ export default async function SignIn() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="w-full px-4">
+        <Footer />
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { authOptions } from "@/lib/auth";
 import FormPage from "./form";
 import GoogleButton from "@/components/ui/google-button";
 import GithubButton from "@/components/ui/github-button";
+import Footer from "@/app/(home)/_components/Footer";
 
 async function fetchProviders() {
   const session = await getServerSession(authOptions);
@@ -77,6 +78,9 @@ export default async function SignUp() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="w-full px-4">
+        <Footer />
       </div>
     </div>
   );
