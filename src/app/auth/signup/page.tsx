@@ -1,6 +1,6 @@
 import Image from "next/image";
 import logo from "@/assets/logo_small_2.svg";
-import { getProviders, signIn } from "next-auth/react";
+import { getProviders } from "next-auth/react";
 import { EvervaultCard, Icon } from "@/components/ui/evervault-card";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";

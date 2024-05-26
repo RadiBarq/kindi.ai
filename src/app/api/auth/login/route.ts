@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server";
-import { hash } from "bcrypt";
+import { compare } from "bcrypt";
 import prismaDB from "@/lib/db/prisma";
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password } = await request.json();
+    const { email, password } = await request.json();
 
-    if (
-      typeof email !== "string" ||
-      typeof password !== "string" ||
-      typeof name !== "string"
-    ) {
+    if (typeof email !== "string" || typeof password !== "string") {
       return NextResponse.json(
         { message: "Email and password are required." },
         { status: 400 },
@@ -25,18 +21,25 @@ export async function POST(request: Request) {
       );
     }
 
-    // YOU MAY WANT TO ADD SOME VALIDATION HERE
-    const hashedPassword = await hash(password, 10);
-    await prismaDB.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        emailVerified: null,
-        image: null,
-      },
-    });
-    console.log({ name, email, password });
+    // Retrieve the user from the database
+    const user = await prismaDB.user.findUnique({ where: { email } });
+
+    if (!user || typeof user.password !== "string") {
+      return NextResponse.json(
+        { message: "Invalid email or password." },
+        { status: 401 },
+      );
+    }
+
+    const passwordMatch = await compare(password, user.password);
+    
+    if (!passwordMatch) {
+      return NextResponse.json(
+        { message: "Invalid email or password." },
+        { status: 401 },
+      );
+    }
+
     return NextResponse.json({ message: "success" });
   } catch (e) {
     console.log({ e });
