@@ -25,6 +25,18 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check if the user is already registered
+    const existingUser = await prismaDB.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { message: "User with this email is already registered." },
+        { status: 400 },
+      );
+    }
+
     // YOU MAY WANT TO ADD SOME VALIDATION HERE
     const hashedPassword = await hash(password, 10);
     await prismaDB.user.create({
