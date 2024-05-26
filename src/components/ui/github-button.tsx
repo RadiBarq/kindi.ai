@@ -1,8 +1,18 @@
-import { Button } from "./button";
+"use client";
 
-export default function GithubButton() {
+import { Button } from "./button";
+import { signIn } from "next-auth/react";
+
+interface GithubButtonProps {
+  providerId: string;
+}
+
+export default function GithubButton({ providerId }: GithubButtonProps) {
   return (
-    <Button className="flex w-72 max-w-md items-center justify-center bg-black  lg:w-96">
+    <Button
+      onClick={() => signIn(providerId)}
+      className="flex w-72 max-w-md items-center justify-center bg-black  lg:w-96"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="20"

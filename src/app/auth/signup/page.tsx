@@ -17,7 +17,7 @@ async function fetchProviders() {
   // Note: Make sure not to redirect to the same page
   // To avoid an infinite loop!
   if (session) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   return await getProviders();
@@ -64,11 +64,13 @@ export default async function SignUp() {
               <FormPage />
               <div className="flex w-full flex-col items-center justify-center gap-4">
                 {Object.values(providers).map((provider) => (
-                  <div key={provider.name} className="">
+                  <div key={provider.name}>
                     {provider.name === "Google" && (
                       <GoogleButton providerId={provider.id} />
                     )}
-                    {provider.name === "GitHub" && <GithubButton />}
+                    {provider.name === "GitHub" && (
+                      <GithubButton providerId={provider.id} />
+                    )}
                   </div>
                 ))}
               </div>

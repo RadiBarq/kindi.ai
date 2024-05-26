@@ -12,7 +12,7 @@ async function fetchProviders() {
   // Note: Make sure not to redirect to the same page
   // To avoid an infinite loop!
   if (session) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   return await getProviders();

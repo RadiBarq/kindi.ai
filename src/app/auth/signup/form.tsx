@@ -2,13 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -41,6 +41,8 @@ export default function FormPage() {
     },
   });
 
+  const router = useRouter();
+
   const onSubmit = async (data: FormData) => {
     console.log("Submitting form", data);
 
@@ -52,17 +54,17 @@ export default function FormPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ email, password, name }),
       });
       if (!response.ok) {
+        console.log(response);
         throw new Error("Network response was not ok");
       }
       // Process response here
       console.log("Registration Successful", response);
-      //toast({ title: "Registration Successful" });
+      router.push("/dashboard");
     } catch (error: any) {
       console.error("Registration Failed:", error);
-      //toast({ title: "Registration Failed", description: error.message });
     }
   };
 

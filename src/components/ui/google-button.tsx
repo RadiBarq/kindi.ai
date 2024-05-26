@@ -4,11 +4,11 @@ import { Button } from "./button";
 import "./styles/google-button-style.css";
 import { signIn } from "next-auth/react";
 
-interface CarEntryProps {
+interface GoogleButtonProps {
   providerId: string;
 }
 
-export default function GoogleButton({ providerId }: CarEntryProps) {
+export default function GoogleButton({ providerId }: GoogleButtonProps) {
   return (
     <Button
       onClick={() => signIn(providerId)}
