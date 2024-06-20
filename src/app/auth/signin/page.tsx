@@ -11,24 +11,16 @@ import GithubButton from "@/components/ui/github-button";
 import Footer from "@/app/(home)/_components/Footer";
 import FormPage from "./form";
 
-async function fetchProviders() {
-  const session = await getServerSession(authOptions);
-
-  // If the user is already logged in, redirect.
-  // Note: Make sure not to redirect to the same page
-  // To avoid an infinite loop!
-  if (session) {
-    redirect("/dashboard");
-  }
-
-  return await getProviders();
+interface SignInProps {
+  searchParams: { error: string };
 }
 
-export default async function SignIn() {
+export default async function SignIn({ searchParams: { error } }: SignInProps) {
   const providers = await fetchProviders();
   if (!providers) {
     return;
   }
+  let errorMessage = getErrorMessage(error);
   return (
     <div className="m-auto flex min-h-screen max-w-7xl flex-col items-center justify-between gap-0 py-10">
       <div className="relative flex w-full  flex-col items-center justify-center gap-16 bg-white py-10 bg-grid-black/[0.2] dark:bg-black dark:bg-grid-white/[0.2]">
@@ -74,6 +66,11 @@ export default async function SignIn() {
                     )}
                   </div>
                 ))}
+                {error && (
+                  <p className="w-full text-center text-red-500">
+                    {errorMessage}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -84,4 +81,42 @@ export default async function SignIn() {
       </div>
     </div>
   );
+}
+
+async function fetchProviders() {
+  const session = await getServerSession(authOptions);
+
+  // If the user is already logged in, redirect.
+  // Note: Make sure not to redirect to the same page
+  // To avoid an infinite loop!
+  if (session) {
+    redirect("/dashboard");
+  }
+
+  return await getProviders();
+}
+
+function getErrorMessage(error: string) {
+  switch (error) {
+    case "OAuthSignin":
+      return "There was an error during the sign-in process. Please try again.";
+    case "OAuthCallback":
+      return "There was an error handling the response from the OAuth provider. Please try again.";
+    case "OAuthCreateAccount":
+      return "We could not create your account using the OAuth provider. Please try again or use another sign-in method.";
+    case "EmailCreateAccount":
+      return "We could not create your account using the email provider. Please try again or use another sign-in method.";
+    case "Callback":
+      return "There was an error during the callback handling. Please try again.";
+    case "OAuthAccountNotLinked":
+      return "Your account is not linked with this OAuth provider. Please sign in using your original sign-in method.";
+    case "EmailSignin":
+      return "Sending the verification email failed. Please try again.";
+    case "CredentialsSignin":
+      return "The sign-in credentials are incorrect. Please check your details and try again.";
+    case "SessionRequired":
+      return "You need to be signed in to access this page. Please sign in and try again.";
+    default:
+      return "An unexpected error has occurred. Please try again.";
+  }
 }
