@@ -1,17 +1,19 @@
-"use client";
-import { signOut } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/api/auth/signin?callbackUrl=/dashboard");
+  }
+
+  console.log(`User id is ${session.user.id}`);
   return (
     <div className="flex h-screen items-center justify-center gap-10">
       Dashboard page
-      <button
-        onClick={() => {
-          signOut({ callbackUrl: "/" });
-        }}
-      >
-        Logout
-      </button>
+      <Link href="/api/auth/signout">Logout</Link>
     </div>
   );
 }

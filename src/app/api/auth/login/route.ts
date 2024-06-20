@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { compare } from "bcrypt";
 import prismaDB from "@/lib/db/prisma";
+import { signIn } from "next-auth/react";
 
 export async function POST(request: Request) {
   try {
@@ -32,15 +33,14 @@ export async function POST(request: Request) {
     }
 
     const passwordMatch = await compare(password, user.password);
-    
+
     if (!passwordMatch) {
       return NextResponse.json(
         { message: "Invalid email or password." },
         { status: 401 },
       );
     }
-
-    return NextResponse.json({ message: "success" });
+    return NextResponse.json({ user: user });
   } catch (e) {
     console.log({ e });
     return NextResponse.json(

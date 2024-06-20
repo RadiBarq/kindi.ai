@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,21 +48,20 @@ export default function FormPage() {
     setLoading(true);
     setError("");
     const { email, password } = data;
-
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+      const response: any = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
+      console.log({ response });
+      if (!response?.error) {
+        router.push("/");
+        router.refresh();
+      }
+
       if (!response.ok) {
-        console.error(response);
-        const data = await response.json();
-        setError(data.message);
-        form.setValue("password", ""); // Clear the password field
-        return;
+        throw new Error("Network response was not ok");
       }
       // Process response here
       console.log("Login is successful", response);
