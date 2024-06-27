@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth/next";
 import Link from "next/link";
 import { authOptions } from "@/lib/auth";
 import Image from "next/image";
-import logo from "@/assets/logo_small_2.svg";
+import logo from "@/assets/main_logo@3x.svg";
 import GoogleButton from "@/components/ui/google-button";
 import GithubButton from "@/components/ui/github-button";
 import Footer from "@/app/(home)/_components/Footer";
@@ -48,11 +48,10 @@ export default async function SignIn({ searchParams: { error } }: SignInProps) {
 
             <div className="flex w-full flex-col justify-center gap-14">
               <Image
-                className="mx-auto w-32 md:w-40"
+                className="mx-auto h-auto w-32 md:w-40"
                 src={logo}
                 alt="Kindi AI Logo"
                 width={150}
-                height={150}
               />
               <FormPage />
               <div className="flex w-full flex-col items-center justify-center gap-4">
@@ -90,7 +89,7 @@ async function fetchProviders() {
   // Note: Make sure not to redirect to the same page
   // To avoid an infinite loop!
   if (session) {
-    redirect("/dashboard");
+    redirect("/project");
   }
 
   return await getProviders();

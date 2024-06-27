@@ -24,7 +24,7 @@ export default function Hero() {
           </div>
         </div>
         <Image
-          className="mt-20 w-full max-w-sm shadow-lg shadow-gray-400 sm:max-w-sm md:mt-0 md:max-w-xs lg:max-w-lg xl:max-w-xl"
+          className="mt-20 h-auto w-full max-w-sm shadow-lg shadow-gray-400 sm:max-w-sm md:mt-0 md:max-w-xs lg:max-w-lg xl:max-w-xl"
           src={logo}
           alt="Pyramid hero image"
           width={1000}

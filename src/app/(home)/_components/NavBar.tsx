@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/logo_small_2.svg";
-import { signIn, signOut } from "next-auth/react";
+import logo from "@/assets/main_logo@1x.svg";
+import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import {
@@ -77,7 +77,7 @@ export default function NavBar() {
           href="/"
           className="flex flex-col items-center sm:flex-row sm:gap-2"
         >
-          <Image src={logo} alt="Kindi AI Logo" width={45} height={45} />
+          <Image className="h-auto" src={logo} alt="Kindi AI Logo" width={45} />
           <span className="pt-1 text-lg font-bold">Kindi AI</span>
         </Link>
         <Menu />
@@ -148,7 +148,7 @@ function Menu() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/docs" legacyBehavior passHref>
+          <Link href="/pricing" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Pricing
             </NavigationMenuLink>

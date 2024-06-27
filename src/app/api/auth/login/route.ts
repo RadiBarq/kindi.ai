@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 import { compare } from "bcrypt";
 import prismaDB from "@/lib/db/prisma";
-import { signIn } from "next-auth/react";
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
-
     if (typeof email !== "string" || typeof password !== "string") {
       return NextResponse.json(
         { message: "Email and password are required." },

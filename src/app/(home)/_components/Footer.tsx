@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/logo_small_2.svg";
+import logo from "@/assets/main_logo@1x.svg";
 
 export default function Footer() {
   return (
@@ -9,7 +9,12 @@ export default function Footer() {
       <div className="flex w-full flex-col items-start justify-between gap-6 py-4 md:flex-row md:items-start md:gap-16 md:py-16">
         <div className="flex flex-row items-center justify-start gap-10 ">
           <div className="flex w-full flex-col gap-2">
-            <Image src={logo} alt="Kindi AI Logo" width={45} height={45} />
+            <Image
+              className="h-auto"
+              src={logo}
+              alt="Kindi AI Logo"
+              width={45}
+            />
             <div className="flex flex-row gap-1 text-sm font-light text-gray-500">
               <Link className="hover:font-normal hover:text-gray-900" href="">
                 Terms

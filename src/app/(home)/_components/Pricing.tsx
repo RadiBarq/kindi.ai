@@ -13,7 +13,7 @@ import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { EvervaultCard, Icon } from "@/components/ui/evervault-card";
+import { Icon } from "@/components/ui/evervault-card";
 import logo from "@/assets/home_pyramid_1.webp";
 import Image from "next/image";
 
@@ -200,7 +200,7 @@ export default function Pricing() {
           <PricingSwitch onSwitch={togglePricingPeriod} />
           <div className="mt-6 flex flex-wrap items-center justify-around gap-10 md:flex-nowrap">
             <Image
-              className="max-w-x ml-2 shadow-lg shadow-gray-400 sm:max-w-md md:mt-0 md:max-w-md lg:max-w-md xl:max-w-lg"
+              className="max-w-x ml-2 h-auto shadow-lg shadow-gray-400 sm:max-w-md md:mt-0 md:max-w-md lg:max-w-md xl:max-w-lg"
               src={logo}
               alt="Pyramid pricing image"
               width={500}
