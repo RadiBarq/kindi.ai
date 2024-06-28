@@ -35,15 +35,14 @@ export default function GetStartedPage() {
         <ActionCard
           title="Create new project"
           description="Begin by creating a new project. Feel free
-            to reach out to us or join our Discord community for
-            support."
+            to reach out to us or join our Discord community."
           actionString="Create new project"
           onActionClick={handleCreateNewProject}
         />
 
         <ActionCard
           title="View demo project"
-          description="Checkout the kindi-docs demo project that has fake customer support converstations and manuals."
+          description="Checkout the kindi-support demo project that has fake customer support converstations and manuals."
           actionString="Go to demo project"
           onActionClick={handleGoToDemoProject}
         />

@@ -19,10 +19,10 @@ export default function ActionCard({
   onActionClick,
 }: ActionCardProps) {
   return (
-    <div className="flex w-full flex-col items-start justify-between gap-4 rounded border border-gray-200 bg-background p-4 font-bold  shadow-gray-200">
+    <div className="flex w-full flex-col items-start justify-between gap-4 rounded border border-gray-200 bg-background p-4  shadow-gray-200">
       <div className="text-2xl font-semibold">{title}</div>
       {description && (
-        <div className="font-mono text-sm text-gray-900 md:h-14">
+        <div className="font-mono text-sm font-normal text-gray-900 md:h-14">
           {description}
         </div>
       )}
