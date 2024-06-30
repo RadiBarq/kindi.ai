@@ -3,20 +3,18 @@ import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
 
 interface IconsProps {
-  // Define the properties and their types that you expect to be passed into MailIcon
   className?: string;
   style?: React.CSSProperties;
-  // other props can be added here as needed
 }
 
 export default function SideMenu() {
+  const appVersion = "v1.0.0";
   return (
-    <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-44 lg:flex">
+    <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-48 lg:flex">
       <div className="flex items-center justify-between">
-        <Link href="#" className="flex items-center gap-2" prefetch={false}>
-          <Image className="h-auto" src={logo} alt="Kindi AI Logo" width={45} />
-          <span className="text-lg font-bold">Kindi AI</span>
-        </Link>
+        <Image className="h-auto" src={logo} alt="Kindi AI Logo" width={45} />
+        <span className="text-lg font-bold">Kindi AI</span>
+        <span className="text-xs font-medium">{appVersion}</span>
       </div>
       <nav className="mt-8 flex flex-col space-y-2">
         <div className="space-y-1">
