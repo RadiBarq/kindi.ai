@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
+import { version } from "@/../package.json";
 
 interface IconsProps {
   className?: string;
@@ -8,13 +9,12 @@ interface IconsProps {
 }
 
 export default function SideMenu() {
-  const appVersion = "v1.0.0";
   return (
     <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-48 lg:flex">
       <div className="flex items-center justify-between">
         <Image className="h-auto" src={logo} alt="Kindi AI Logo" width={45} />
         <span className="text-lg font-bold">Kindi AI</span>
-        <span className="text-xs font-medium">{appVersion}</span>
+        <span className="text-xs font-medium">{version}</span>
       </div>
       <nav className="mt-8 flex flex-col space-y-2">
         <div className="space-y-1">

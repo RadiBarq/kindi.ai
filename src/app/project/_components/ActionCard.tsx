@@ -15,7 +15,6 @@ export default function ActionCard({
   title,
   description,
   actionString,
-  actionIcon,
   onActionClick,
 }: ActionCardProps) {
   return (

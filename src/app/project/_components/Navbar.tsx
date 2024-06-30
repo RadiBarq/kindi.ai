@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
+import { version } from "@/../package.json";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { UserRound } from "lucide-react";
 
@@ -48,7 +49,7 @@ export default function Navbar() {
                 width={45}
               />
               <span className="text-lg font-bold">Kindi AI</span>
-              <span className="text-sm">{appVersion}</span>
+              <span className="text-sm">{version}</span>
             </Link>
             <Link
               href="#"
