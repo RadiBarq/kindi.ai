@@ -10,6 +10,7 @@ import {
   CircleHelp,
   Mail,
   ChevronDown,
+  Library,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -94,6 +95,15 @@ export default function SideMenu() {
           >
             <Mail className="h-5 w-5" />
             Feedback
+          </Link>
+
+          <Link
+            href="#"
+            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+            prefetch={false}
+          >
+            <Library className="h-5 w-5" />
+            Docs
           </Link>
         </div>
         <div className="space-y-1">

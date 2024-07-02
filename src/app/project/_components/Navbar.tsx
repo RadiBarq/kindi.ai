@@ -21,7 +21,7 @@ import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
 import { version } from "@/../package.json";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
-import { UserRound } from "lucide-react";
+import { UserRound, Library } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -59,7 +59,7 @@ export default function Navbar() {
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               prefetch={false}
             >
-              <Bot className="h-8 w-8" />
+              <Bot className="h-7 w-7" />
               <div>Copilot</div>
             </Link>
             <Link
@@ -67,7 +67,7 @@ export default function Navbar() {
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               prefetch={false}
             >
-              <MessageCircle className="h-8 w-8" />
+              <MessageCircle className="h-7 w-7" />
               Conversations
             </Link>
             <Link
@@ -75,7 +75,7 @@ export default function Navbar() {
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               prefetch={false}
             >
-              <Box className="h-8 w-8" />
+              <Box className="h-7 w-7" />
               Datasources
             </Link>
             <Link
@@ -83,7 +83,7 @@ export default function Navbar() {
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               prefetch={false}
             >
-              <Settings className="h-8 w-8" />
+              <Settings className="h-7 w-7" />
               Settings
             </Link>
             <Link
@@ -91,7 +91,7 @@ export default function Navbar() {
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               prefetch={false}
             >
-              <CircleHelp className="h-8 w-8" />
+              <CircleHelp className="h-7 w-7" />
               Help
             </Link>
             <Link
@@ -99,11 +99,19 @@ export default function Navbar() {
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               prefetch={false}
             >
-              <Mail className="h-8 w-8" />
+              <Mail className="h-7 w-7" />
               Feedback
             </Link>
+            <Link
+              href="#"
+              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+              prefetch={false}
+            >
+              <Library className="h-7 w-7" />
+              Docs
+            </Link>
             <div className="space-y-1">
-              <h3 className="text-xl font-medium text-muted-foreground">
+              <h3 className="mb-2 text-lg font-medium text-muted-foreground">
                 Project
               </h3>
               <ProjectSelectBox />
