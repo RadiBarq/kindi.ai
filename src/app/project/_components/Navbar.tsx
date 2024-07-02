@@ -31,7 +31,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function Navbar() {
+interface NavbarProps {
+  isGetStarted: boolean;
+}
+
+export default function Navbar({ isGetStarted }: NavbarProps) {
   const email = "grayllow@gmail.com";
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 lg:hidden">
@@ -54,38 +58,43 @@ export default function Navbar() {
               <span className="text-lg font-bold">Kindi AI</span>
               <span className="text-sm">v{version}</span>
             </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              prefetch={false}
-            >
-              <Bot className="h-7 w-7" />
-              <div>Copilot</div>
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              prefetch={false}
-            >
-              <MessageCircle className="h-7 w-7" />
-              Conversations
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              prefetch={false}
-            >
-              <Box className="h-7 w-7" />
-              Datasources
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              prefetch={false}
-            >
-              <Settings className="h-7 w-7" />
-              Settings
-            </Link>
+            {!isGetStarted && (
+              <>
+                <Link
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  prefetch={false}
+                >
+                  <Bot className="h-7 w-7" />
+                  <div>Copilot</div>
+                </Link>
+                <Link
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  prefetch={false}
+                >
+                  <MessageCircle className="h-7 w-7" />
+                  Conversations
+                </Link>
+                <Link
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  prefetch={false}
+                >
+                  <Box className="h-7 w-7" />
+                  Datasources
+                </Link>
+                <Link
+                  href="#"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  prefetch={false}
+                >
+                  <Settings className="h-7 w-7" />
+                  Settings
+                </Link>
+              </>
+            )}
+
             <Link
               href="#"
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"

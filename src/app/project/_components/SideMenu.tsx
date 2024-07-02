@@ -32,7 +32,11 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-export default function SideMenu() {
+interface SideMenu {
+  isGetStarted: boolean;
+}
+
+export default function SideMenu({ isGetStarted }: SideMenu) {
   const username = "radi barq";
   const email = "grayllow@gmail.com";
   return (
@@ -43,41 +47,44 @@ export default function SideMenu() {
         <span className="text-xs font-medium">v{version}</span>
       </div>
       <nav className="mt-8 flex flex-col space-y-2">
-        <div className="space-y-1">
-          <h3 className="text-sm font-medium text-muted-foreground">Main</h3>
-          <Link
-            href="#"
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
-            prefetch={false}
-          >
-            <Bot className="h-5 w-5" />
-            Copilot
-          </Link>
-          <Link
-            href="#"
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
-            prefetch={false}
-          >
-            <MessageCircle className="h-5 w-5" />
-            Conversations
-          </Link>
-          <Link
-            href="#"
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
-            prefetch={false}
-          >
-            <Box className="h-5 w-5" />
-            Datasources
-          </Link>
-          <Link
-            href="#"
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
-            prefetch={false}
-          >
-            <Settings className="h-5 w-5" />
-            Settings
-          </Link>
-        </div>
+        {!isGetStarted && (
+          <div className="space-y-1">
+            <h3 className="text-sm font-medium text-muted-foreground">Main</h3>
+            <Link
+              href="#"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+              prefetch={false}
+            >
+              <Bot className="h-5 w-5" />
+              Copilot
+            </Link>
+            <Link
+              href="#"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+              prefetch={false}
+            >
+              <MessageCircle className="h-5 w-5" />
+              Conversations
+            </Link>
+            <Link
+              href="#"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+              prefetch={false}
+            >
+              <Box className="h-5 w-5" />
+              Datasources
+            </Link>
+            <Link
+              href="#"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+              prefetch={false}
+            >
+              <Settings className="h-5 w-5" />
+              Settings
+            </Link>
+          </div>
+        )}
+
         <div className="space-y-1">
           <h3 className="text-sm font-medium text-muted-foreground">Support</h3>
           <Link
