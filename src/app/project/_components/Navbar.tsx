@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -33,13 +35,28 @@ import {
 
 interface NavbarProps {
   isGetStarted: boolean;
+  email: string;
+  pictureURL: string | null;
+  projectId: string;
 }
+import { useState } from "react";
 
-export default function Navbar({ isGetStarted }: NavbarProps) {
-  const email = "grayllow@gmail.com";
+export default function Navbar({
+  isGetStarted,
+  email,
+  pictureURL,
+  projectId,
+}: NavbarProps) {
+  const rootPath = `/project/${projectId}`;
+  const [isOpen, setIsOpen] = useState(false);
+
+  const closeSheet = () => {
+    setIsOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 lg:hidden">
-      <Sheet>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button size="icon" variant="outline">
             <Columns2 className="h-5 w-5" />
@@ -61,33 +78,37 @@ export default function Navbar({ isGetStarted }: NavbarProps) {
             {!isGetStarted && (
               <>
                 <Link
-                  href="#"
+                  href={`${rootPath}/copilot`}
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   prefetch={false}
+                  onClick={closeSheet}
                 >
                   <Bot className="h-7 w-7" />
                   <div>Copilot</div>
                 </Link>
                 <Link
-                  href="#"
+                  href={`${rootPath}/conversations`}
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   prefetch={false}
+                  onClick={closeSheet}
                 >
                   <MessageCircle className="h-7 w-7" />
                   Conversations
                 </Link>
                 <Link
-                  href="#"
+                  href={`${rootPath}/datasources`}
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   prefetch={false}
+                  onClick={closeSheet}
                 >
                   <Box className="h-7 w-7" />
                   Datasources
                 </Link>
                 <Link
-                  href="#"
+                  href={`${rootPath}/settings`}
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   prefetch={false}
+                  onClick={closeSheet}
                 >
                   <Settings className="h-7 w-7" />
                   Settings

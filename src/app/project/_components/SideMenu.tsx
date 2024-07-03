@@ -34,11 +34,19 @@ import {
 
 interface SideMenu {
   isGetStarted: boolean;
+  email: string;
+  username: string;
+  projectId: string;
 }
 
-export default function SideMenu({ isGetStarted }: SideMenu) {
-  const username = "radi barq";
-  const email = "grayllow@gmail.com";
+export default function SideMenu({
+  isGetStarted,
+  email,
+  username,
+  projectId,
+}: SideMenu) {
+  const rootPath = `/project/${projectId}`;
+  console.log(`Root path is ${rootPath}`);
   return (
     <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-48 lg:flex">
       <div className="flex items-center justify-between">
@@ -51,7 +59,7 @@ export default function SideMenu({ isGetStarted }: SideMenu) {
           <div className="space-y-1">
             <h3 className="text-sm font-medium text-muted-foreground">Main</h3>
             <Link
-              href="#"
+              href={`${rootPath}/copilot`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
               prefetch={false}
             >
@@ -59,7 +67,7 @@ export default function SideMenu({ isGetStarted }: SideMenu) {
               Copilot
             </Link>
             <Link
-              href="#"
+              href={`${rootPath}/conversations`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
               prefetch={false}
             >
@@ -67,7 +75,7 @@ export default function SideMenu({ isGetStarted }: SideMenu) {
               Conversations
             </Link>
             <Link
-              href="#"
+              href={`${rootPath}/datasources`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
               prefetch={false}
             >
@@ -75,7 +83,7 @@ export default function SideMenu({ isGetStarted }: SideMenu) {
               Datasources
             </Link>
             <Link
-              href="#"
+              href={`${rootPath}/settings`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
               prefetch={false}
             >
