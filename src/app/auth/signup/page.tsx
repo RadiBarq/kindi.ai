@@ -10,6 +10,12 @@ import FormPage from "./form";
 import GoogleButton from "@/components/ui/google-button";
 import GithubButton from "@/components/ui/github-button";
 import Footer from "@/app/(home)/_components/Footer";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sign up | Kindi AI",
+  description: "The new age of customer support copilot is here",
+};
 
 async function fetchProviders() {
   const session = await getServerSession(authOptions);
@@ -44,7 +50,7 @@ export default async function SignUp() {
               Already have an account?
             </h2>
             <p className="mt-4 rounded-full border border-black/[0.2] px-2 py-0.5 text-sm font-light text-black dark:border-white/[0.2] dark:text-white">
-              <Link href="/auth/signin">Sign In here</Link>
+              <Link href="/auth/signin">Sign up here</Link>
             </p>
           </div>
 

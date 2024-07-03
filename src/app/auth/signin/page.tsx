@@ -10,10 +10,16 @@ import GoogleButton from "@/components/ui/google-button";
 import GithubButton from "@/components/ui/github-button";
 import Footer from "@/app/(home)/_components/Footer";
 import FormPage from "./form";
+import type { Metadata } from "next";
 
 interface SignInProps {
   searchParams: { error: string };
 }
+
+export const metadata: Metadata = {
+  title: "Sign in | Kindi AI",
+  description: "The new age of customer support copilot is here",
+};
 
 export default async function SignIn({ searchParams: { error } }: SignInProps) {
   const providers = await fetchProviders();
@@ -36,7 +42,7 @@ export default async function SignIn({ searchParams: { error } }: SignInProps) {
               Don&apos;t have an account?
             </h2>
             <p className="mt-4 rounded-full border border-black/[0.2] px-2 py-0.5 text-sm font-light text-black dark:border-white/[0.2] dark:text-white">
-              <Link href="/auth/signup">Sign Up here</Link>
+              <Link href="/auth/signup">Sign up here</Link>
             </p>
           </div>
 

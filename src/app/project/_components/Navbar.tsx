@@ -21,7 +21,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
-import { version } from "@/../package.json";
+import packageInfo from "@/../package.json";
+
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { UserRound, Library } from "lucide-react";
 import {
@@ -32,6 +33,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useState } from "react";
+const { version } = packageInfo;
 
 interface NavbarProps {
   isGetStarted: boolean;
@@ -39,8 +42,6 @@ interface NavbarProps {
   pictureURL: string | null;
   projectId: string;
 }
-import { useState } from "react";
-
 export default function Navbar({
   isGetStarted,
   email,
@@ -78,7 +79,7 @@ export default function Navbar({
             {!isGetStarted && (
               <>
                 <Link
-                  href={`${rootPath}/copilot`}
+                  href={`${rootPath}/`}
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                   prefetch={false}
                   onClick={closeSheet}

@@ -2,7 +2,12 @@ import Hero from "./_components/Hero";
 import Features from "./_components/Features";
 import Pricing from "./_components/Pricing";
 import CTA from "./_components/CTA";
-import Footer from "./_components/Footer";
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Kindi AI',
+  description: 'The new age of customer support copilot is here',
+}
 
 export default function Home() {
   return (
