@@ -9,7 +9,6 @@ import CreateProjectDialog from "../_components/CreateProjectDialog";
 export default function GetStartedPage() {
   const { data: session, status } = useSession();
   const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
-
   if (!session || status != "authenticated") {
     return <div>Loading</div>;
   }

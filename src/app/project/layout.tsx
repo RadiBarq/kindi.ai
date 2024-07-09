@@ -25,8 +25,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         />
         <SideMenu
           isGetStarted={isGetStarted}
-          username="radi barq"
-          email="grayllow@gmail.com"
           projectId={projectId}
           pathname={pathname}
         />

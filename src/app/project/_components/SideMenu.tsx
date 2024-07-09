@@ -36,24 +36,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import FeedbackDialog from "./FeedbackDialog";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 interface SideMenu {
   isGetStarted: boolean;
-  email: string;
-  username: string;
   projectId: string;
   pathname: string;
 }
 
 export default function SideMenu({
   isGetStarted,
-  email,
-  username,
   projectId,
   pathname,
 }: SideMenu) {
   const rootPath = `/project/${projectId}`;
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
+  const { data: session } = useSession();
+  const username = session?.user.name ?? "";
+  const email = session?.user.email ?? "";
+
+  const onClickLogout = () => {
+    signOut({ callbackUrl: "/" });
+  };
+
   return (
     <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
       <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-48 lg:flex">
@@ -148,23 +154,33 @@ export default function SideMenu({
             <h3 className="text-sm font-medium text-muted-foreground">
               Profile
             </h3>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full px-3">
-                  <div className="flex w-full items-start justify-between ">
-                    <div className="text-sm font-medium">{username}</div>
-                    <ChevronDown className="ml-2 mt-1 h-4 w-4" color="gray" />
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{email}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Logout</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+
+            {session && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full px-3">
+                    <div className="flex w-full items-start justify-between ">
+                      <div className="text-sm font-medium">{username}</div>
+                      <ChevronDown className="ml-2 mt-1 h-4 w-4" color="gray" />
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>{email}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer">
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={onClickLogout}
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </nav>
       </div>

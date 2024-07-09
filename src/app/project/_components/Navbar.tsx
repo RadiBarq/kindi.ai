@@ -37,6 +37,8 @@ import { useState } from "react";
 import FeedbackDialog from "./FeedbackDialog";
 import { Dialog } from "@/components/ui/dialog";
 const { version } = packageInfo;
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 interface NavbarProps {
   isGetStarted: boolean;
@@ -47,17 +49,22 @@ interface NavbarProps {
 }
 export default function Navbar({
   isGetStarted,
-  email,
-  pictureURL,
   projectId,
   pathname,
 }: NavbarProps) {
   const rootPath = `/project/${projectId}`;
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
-
+  const { data: session } = useSession();
+  const username = session?.user.name ?? "";
+  const email = session?.user.email ?? "";
+  const profilePicture = session?.user.image ?? "";
   const closeSheet = () => {
     setIsOpen(false);
+  };
+
+  const onClickLogout = () => {
+    signOut({ callbackUrl: "/" });
   };
 
   return (
@@ -175,15 +182,31 @@ export default function Navbar({
               size="icon"
               className="overflow-hidden rounded-full"
             >
-              <UserRound />
+              {!profilePicture && <UserRound />}
+              {profilePicture && (
+                <Image
+                  className="h-auto"
+                  src={profilePicture}
+                  alt="User profile image"
+                  width={45}
+                  height={45}
+                />
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>{email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Settings
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={onClickLogout}
+            >
+              Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </Dialog>
