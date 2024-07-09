@@ -34,6 +34,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import FeedbackDialog from "./FeedbackDialog";
+import { Dialog } from "@/components/ui/dialog";
 const { version } = packageInfo;
 
 interface NavbarProps {
@@ -52,6 +54,7 @@ export default function Navbar({
 }: NavbarProps) {
   const rootPath = `/project/${projectId}`;
   const [isOpen, setIsOpen] = useState(false);
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
 
   const closeSheet = () => {
     setIsOpen(false);
@@ -59,123 +62,131 @@ export default function Navbar({
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 lg:hidden">
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <Button size="icon" variant="outline">
-            <Columns2 className="h-5 w-5" />
-            <span className="sr-only">Toggle Menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="sm:max-w-xs">
-          <nav className="grid gap-6 text-xl ">
-            <Link href="#" className="flex items-center gap-2" prefetch={false}>
-              <Image
-                className="h-auto"
-                src={logo}
-                alt="Kindi AI Logo"
-                width={45}
-              />
-              <span className="text-lg font-bold">Kindi AI</span>
-              <span className="text-sm">v{version}</span>
-            </Link>
-            {!isGetStarted && (
-              <>
-                <Link
-                  href={`${rootPath}/`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
-                  prefetch={false}
-                  onClick={closeSheet}
-                  data-active={pathname === rootPath}
-                >
-                  <Bot className="h-7 w-7" />
-                  <div>Copilot</div>
-                </Link>
-                <Link
-                  href={`${rootPath}/conversations`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
-                  prefetch={false}
-                  onClick={closeSheet}
-                  data-active={pathname === `${rootPath}/conversations`}
-                >
-                  <MessageCircle className="h-7 w-7" />
-                  Conversations
-                </Link>
-                <Link
-                  href={`${rootPath}/datasources`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
-                  prefetch={false}
-                  onClick={closeSheet}
-                  data-active={pathname === `${rootPath}/datasources`}
-                >
-                  <Box className="h-7 w-7" />
-                  Datasources
-                </Link>
-                <Link
-                  href={`${rootPath}/settings`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
-                  prefetch={false}
-                  onClick={closeSheet}
-                  data-active={pathname === `${rootPath}/settings`}
-                >
-                  <Settings className="h-7 w-7" />
-                  Settings
-                </Link>
-              </>
-            )}
+      <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button size="icon" variant="outline">
+              <Columns2 className="h-5 w-5" />
+              <span className="sr-only">Toggle Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="sm:max-w-xs">
+            <nav className="grid gap-6 text-xl ">
+              <Link
+                href="#"
+                className="flex items-center gap-2"
+                prefetch={false}
+              >
+                <Image
+                  className="h-auto"
+                  src={logo}
+                  alt="Kindi AI Logo"
+                  width={45}
+                />
+                <span className="text-lg font-bold">Kindi AI</span>
+                <span className="text-sm">v{version}</span>
+              </Link>
+              {!isGetStarted && (
+                <>
+                  <Link
+                    href={`${rootPath}/`}
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
+                    prefetch={false}
+                    onClick={closeSheet}
+                    data-active={pathname === rootPath}
+                  >
+                    <Bot className="h-7 w-7" />
+                    <div>Copilot</div>
+                  </Link>
+                  <Link
+                    href={`${rootPath}/conversations`}
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
+                    prefetch={false}
+                    onClick={closeSheet}
+                    data-active={pathname === `${rootPath}/conversations`}
+                  >
+                    <MessageCircle className="h-7 w-7" />
+                    Conversations
+                  </Link>
+                  <Link
+                    href={`${rootPath}/datasources`}
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
+                    prefetch={false}
+                    onClick={closeSheet}
+                    data-active={pathname === `${rootPath}/datasources`}
+                  >
+                    <Box className="h-7 w-7" />
+                    Datasources
+                  </Link>
+                  <Link
+                    href={`${rootPath}/settings`}
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
+                    prefetch={false}
+                    onClick={closeSheet}
+                    data-active={pathname === `${rootPath}/settings`}
+                  >
+                    <Settings className="h-7 w-7" />
+                    Settings
+                  </Link>
+                </>
+              )}
 
-            <Link
-              href={`${rootPath}/help`}
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
-              prefetch={false}
-              data-active={pathname === `${rootPath}/help`}
+              <Link
+                href={`${rootPath}/help`}
+                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
+                prefetch={false}
+                data-active={pathname === `${rootPath}/help`}
+              >
+                <CircleHelp className="h-7 w-7" />
+                Help
+              </Link>
+              <Link
+                href="#"
+                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                prefetch={false}
+                onClick={() => setFeedbackDialogOpen(true)}
+              >
+                <Mail className="h-7 w-7" />
+                Feedback
+              </Link>
+              <Link
+                href="/docs"
+                target="_blank"
+                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                prefetch={false}
+              >
+                <Library className="h-7 w-7" />
+                Docs
+              </Link>
+              <div className="space-y-1">
+                <h3 className="mb-2 text-lg font-medium text-muted-foreground">
+                  Project
+                </h3>
+                <ProjectSelectBox />
+              </div>
+            </nav>
+          </SheetContent>
+        </Sheet>
+        <FeedbackDialog />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="overflow-hidden rounded-full"
             >
-              <CircleHelp className="h-7 w-7" />
-              Help
-            </Link>
-            <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              prefetch={false}
-            >
-              <Mail className="h-7 w-7" />
-              Feedback
-            </Link>
-            <Link
-              href="/docs"
-              target="_blank"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              prefetch={false}
-            >
-              <Library className="h-7 w-7" />
-              Docs
-            </Link>
-            <div className="space-y-1">
-              <h3 className="mb-2 text-lg font-medium text-muted-foreground">
-                Project
-              </h3>
-              <ProjectSelectBox />
-            </div>
-          </nav>
-        </SheetContent>
-      </Sheet>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="overflow-hidden rounded-full"
-          >
-            <UserRound />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>{email}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              <UserRound />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>{email}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Logout</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </Dialog>
     </header>
   );
 }
