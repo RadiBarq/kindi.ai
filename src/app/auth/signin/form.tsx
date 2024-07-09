@@ -65,7 +65,7 @@ export default function FormPage() {
       }
       // Process response here
       console.log("Login is successful", response);
-      router.push("/project");
+      router.push("/project/getStarted");
     } catch (error: any) {
       console.error("An unexpected error happened: ", error);
       setError("An unexpected error occurred.");

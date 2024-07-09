@@ -16,12 +16,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <div className="relative min-h-screen bg-white p-4 bg-grid-black/[0.2] dark:bg-black dark:bg-grid-white/[0.2]">
-        <Navbar isGetStarted={isGetStarted} />
+        <Navbar
+          isGetStarted={isGetStarted}
+          email="grayllow@gmail.com"
+          pictureURL={null}
+          projectId="1234"
+          pathname={pathname}
+        />
         <SideMenu
           isGetStarted={isGetStarted}
           username="radi barq"
           email="grayllow@gmail.com"
           projectId={projectId}
+          pathname={pathname}
         />
         {!projectId && (
           <div className="overflow-auto lg:ml-48">Project not found</div>

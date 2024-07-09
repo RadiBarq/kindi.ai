@@ -37,6 +37,7 @@ interface SideMenu {
   email: string;
   username: string;
   projectId: string;
+  pathname: string;
 }
 
 export default function SideMenu({
@@ -44,9 +45,9 @@ export default function SideMenu({
   email,
   username,
   projectId,
+  pathname,
 }: SideMenu) {
   const rootPath = `/project/${projectId}`;
-  console.log(`Root path is ${rootPath}`);
   return (
     <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-48 lg:flex">
       <div className="flex items-center justify-between">
@@ -62,6 +63,7 @@ export default function SideMenu({
               href={`${rootPath}/`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
               prefetch={false}
+              data-active={pathname === rootPath}
             >
               <Bot className="h-5 w-5" />
               Copilot
@@ -70,6 +72,7 @@ export default function SideMenu({
               href={`${rootPath}/conversations`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
               prefetch={false}
+              data-active={pathname === `${rootPath}/conversations`}
             >
               <MessageCircle className="h-5 w-5" />
               Conversations
@@ -78,6 +81,7 @@ export default function SideMenu({
               href={`${rootPath}/datasources`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
               prefetch={false}
+              data-active={pathname === `${rootPath}/datasources`}
             >
               <Box className="h-5 w-5" />
               Datasources
@@ -86,6 +90,7 @@ export default function SideMenu({
               href={`${rootPath}/settings`}
               className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
               prefetch={false}
+              data-active={pathname === `${rootPath}/settings`}
             >
               <Settings className="h-5 w-5" />
               Settings
@@ -96,9 +101,10 @@ export default function SideMenu({
         <div className="space-y-1">
           <h3 className="text-sm font-medium text-muted-foreground">Support</h3>
           <Link
-            href="#"
+            href={`${rootPath}/help`}
             className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
             prefetch={false}
+            data-active={pathname === `${rootPath}/help`}
           >
             <CircleHelp className="h-5 w-5" />
             Help
@@ -113,7 +119,8 @@ export default function SideMenu({
           </Link>
 
           <Link
-            href="#"
+            href="/docs"
+            target="_blank"
             className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
             prefetch={false}
           >

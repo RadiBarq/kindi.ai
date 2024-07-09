@@ -41,12 +41,14 @@ interface NavbarProps {
   email: string;
   pictureURL: string | null;
   projectId: string;
+  pathname: string;
 }
 export default function Navbar({
   isGetStarted,
   email,
   pictureURL,
   projectId,
+  pathname,
 }: NavbarProps) {
   const rootPath = `/project/${projectId}`;
   const [isOpen, setIsOpen] = useState(false);
@@ -80,36 +82,40 @@ export default function Navbar({
               <>
                 <Link
                   href={`${rootPath}/`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
                   prefetch={false}
                   onClick={closeSheet}
+                  data-active={pathname === rootPath}
                 >
                   <Bot className="h-7 w-7" />
                   <div>Copilot</div>
                 </Link>
                 <Link
                   href={`${rootPath}/conversations`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
                   prefetch={false}
                   onClick={closeSheet}
+                  data-active={pathname === `${rootPath}/conversations`}
                 >
                   <MessageCircle className="h-7 w-7" />
                   Conversations
                 </Link>
                 <Link
                   href={`${rootPath}/datasources`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
                   prefetch={false}
                   onClick={closeSheet}
+                  data-active={pathname === `${rootPath}/datasources`}
                 >
                   <Box className="h-7 w-7" />
                   Datasources
                 </Link>
                 <Link
                   href={`${rootPath}/settings`}
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
                   prefetch={false}
                   onClick={closeSheet}
+                  data-active={pathname === `${rootPath}/settings`}
                 >
                   <Settings className="h-7 w-7" />
                   Settings
@@ -118,9 +124,10 @@ export default function Navbar({
             )}
 
             <Link
-              href="#"
-              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+              href={`${rootPath}/help`}
+              className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
               prefetch={false}
+              data-active={pathname === `${rootPath}/help`}
             >
               <CircleHelp className="h-7 w-7" />
               Help
@@ -134,7 +141,8 @@ export default function Navbar({
               Feedback
             </Link>
             <Link
-              href="#"
+              href="/docs"
+              target="_blank"
               className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               prefetch={false}
             >
