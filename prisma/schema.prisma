@@ -13,6 +13,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
 model Account {
   id                String  @id @default(uuid())
   userId            String
@@ -44,29 +51,55 @@ model Session {
 }
 
 model User {
-  id            String        @id @default(uuid())
-  name          String?
-  email         String?       @unique
-  emailVerified DateTime?
-  image         String?
-  password      String? // Add password field
-  accounts      Account[]
-  sessions      Session[]
-  ProjectUser   ProjectUser[]
+  id             String          @id @default(uuid())
+  createdAt      DateTime        @default(now())
+  name           String?
+  email          String?         @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String? // Add password field
+  accounts       Account[]
+  sessions       Session[]
+  projects       ProjectUser[]
+  projectInvites ProjectInvite[]
 
   @@map("users")
 }
 
-model ProjectUser {
-  id        String @id @default(uuid())
-  userId    String
-  projectId String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Project {
+  id        String          @id @default(uuid())
+  name      String?
+  invites   ProjectInvite[]
+  users     ProjectUser[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@map("projects")
 }
 
-model Project {
-  id   String  @id @default(uuid())
-  name String?
+model ProjectUser {
+  id        String   @id @default(uuid())
+  userId    String
+  projectId String
+  role      Role
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("projectusers")
+}
+
+model ProjectInvite {
+  id        String   @id @default(uuid())
+  createdAT DateTime @default(now())
+  projectId String
+  email     String
+  role      Role
+  sentBy    String
+  user      User     @relation(fields: [sentBy], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("projectinvites")
 }
 
 model VerificationToken {
