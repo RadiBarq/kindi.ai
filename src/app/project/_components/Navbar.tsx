@@ -37,8 +37,10 @@ import { useState } from "react";
 import FeedbackDialog from "./FeedbackDialog";
 import { Dialog } from "@/components/ui/dialog";
 const { version } = packageInfo;
+import { Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
+import CreateProjectDialog from "../_components/CreateProjectDialog";
 
 interface NavbarProps {
   isGetStarted: boolean;
@@ -55,6 +57,7 @@ export default function Navbar({
   const rootPath = `/project/${projectId}`;
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
+  const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
   const { data: session } = useSession();
   const email = session?.user.email ?? "";
   const profilePicture = session?.user.image ?? "";
@@ -66,9 +69,17 @@ export default function Navbar({
     signOut({ callbackUrl: "/" });
   };
 
+  const handleOnNewProjectCreated = () => {
+    setCreateProjectDialogOpen(false);
+    closeSheet();
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 lg:hidden">
-      <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
+      <Dialog
+        open={feedbackDialogOpen || createProjectDialogOpen}
+        onOpenChange={feedbackDialogOpen ? setFeedbackDialogOpen : setCreateProjectDialogOpen}
+      >
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
@@ -165,15 +176,31 @@ export default function Navbar({
                 Docs
               </Link>
               <div className="space-y-1">
-                <h3 className="mb-2 text-lg font-medium text-muted-foreground">
-                  Project
-                </h3>
+                <div className="flex flex-row items-center justify-between">
+                  <h3 className="mb-2 text-lg font-medium text-muted-foreground">
+                    Project
+                  </h3>
+
+                  <Button
+                    onClick={() => setCreateProjectDialogOpen(true)}
+                    variant="outline"
+                    className="h-6 w-14 px-1"
+                  >
+                    <Plus className="h-4 w-4 " />
+                    <div className="text-xs">New</div>
+                  </Button>
+                </div>
                 <ProjectSelectBox />
               </div>
             </nav>
           </SheetContent>
         </Sheet>
-        <FeedbackDialog />
+        {feedbackDialogOpen && <FeedbackDialog />}
+        {createProjectDialogOpen && (
+          <CreateProjectDialog
+            onCreateProjectSucceeded={handleOnNewProjectCreated}
+          />
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

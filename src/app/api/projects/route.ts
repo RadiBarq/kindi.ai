@@ -26,14 +26,14 @@ export async function POST(req: Request) {
     }
     const { projectName } = validation.data;
 
-    const result = await prismaDB.$transaction(async (prisma) => {
-      const newProject = await prisma.project.create({
+    const result = await prismaDB.$transaction(async (tx) => {
+      const newProject = await tx.project.create({
         data: {
           name: projectName,
         },
       });
 
-      await prisma.projectUser.create({
+      await tx.projectUser.create({
         data: {
           projectId: newProject.id,
           userId: userId,

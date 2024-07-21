@@ -12,7 +12,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
-export default function CreateProjectDialog() {
+interface CreateProjectDialogProps {
+  onCreateProjectSucceeded: () => void;
+}
+
+export default function CreateProjectDialog({
+  onCreateProjectSucceeded,
+}: CreateProjectDialogProps) {
   return (
     <>
       <DialogContent className="sm:max-w-[425px]">
@@ -20,13 +26,18 @@ export default function CreateProjectDialog() {
           <DialogTitle>New project</DialogTitle>
         </DialogHeader>
         <DialogDescription></DialogDescription>
-        <InputForm />
+        <InputForm onCreateProject={onCreateProjectSucceeded} />
       </DialogContent>
     </>
   );
 }
 
-function InputForm({ className }: React.ComponentProps<"form">) {
+interface InputFormProps {
+  onCreateProject: () => void;
+  className?: string;
+}
+
+function InputForm({ onCreateProject, className }: InputFormProps) {
   const [projectName, setProjectName] = useState("");
   const [error, setError] = useState<String | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +75,7 @@ function InputForm({ className }: React.ComponentProps<"form">) {
         throw new Error(data.message || "Something went wrong!");
       }
       setProjectName("");
+      onCreateProject();
       router.push(`/project/${data.project.id}/settings`);
     } catch (error: any) {
       console.log(error);

@@ -38,6 +38,8 @@ import FeedbackDialog from "./FeedbackDialog";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
+import { Plus } from "lucide-react";
+import CreateProjectDialog from "../_components/CreateProjectDialog";
 
 interface SideMenu {
   isGetStarted: boolean;
@@ -53,6 +55,7 @@ export default function SideMenu({
   const rootPath = `/project/${projectId}`;
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const { data: session } = useSession();
+  const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
   const username = session?.user.name ?? "";
   const email = session?.user.email ?? "";
 
@@ -61,9 +64,19 @@ export default function SideMenu({
   };
 
   return (
-    <Dialog open={feedbackDialogOpen} onOpenChange={setFeedbackDialogOpen}>
+    <Dialog
+      open={feedbackDialogOpen || createProjectDialogOpen}
+      onOpenChange={
+        feedbackDialogOpen ? setFeedbackDialogOpen : setCreateProjectDialogOpen
+      }
+    >
       <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-48 lg:flex">
-        <FeedbackDialog />
+        {feedbackDialogOpen && <FeedbackDialog />}
+        {createProjectDialogOpen && (
+          <CreateProjectDialog
+            onCreateProjectSucceeded={() => setCreateProjectDialogOpen(false)}
+          />
+        )}
         <div className="flex items-center justify-between">
           <Image className="h-auto" src={logo} alt="Kindi AI Logo" width={45} />
           <span className="text-lg font-bold">Kindi AI</span>
@@ -143,13 +156,20 @@ export default function SideMenu({
               Docs
             </Link>
           </div>
-          <div className="space-y-1">
-            <div className="flex flex-row justify-between">
+          <div className="space-y-2">
+            <div className="flex flex-row items-center justify-between">
               <h3 className="text-sm font-medium text-muted-foreground">
                 Project
               </h3>
-              
 
+              <Button
+                onClick={() => setCreateProjectDialogOpen(true)}
+                variant="outline"
+                className="h-6 w-14 px-1"
+              >
+                <Plus className="h-4 w-4 " />
+                <div className="text-xs">New</div>
+              </Button>
             </div>
             <ProjectSelectBox />
           </div>

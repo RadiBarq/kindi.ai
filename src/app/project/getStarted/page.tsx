@@ -13,13 +13,13 @@ export default function GetStartedPage() {
     return <div>Loading</div>;
   }
 
-  function handleCreateNewProject() {
+  const handleCreateNewProject = () => {
     setCreateProjectDialogOpen(true);
-  }
+  };
 
-  function handleGoToDemoProject() {}
+  const handleGoToDemoProject = () => {};
 
-  function handleScheduleCallWithFounder() {}
+  const handleScheduleCallWithFounder = () => {};
 
   console.log(`User id is ${session.user.id}`);
   return (
@@ -27,7 +27,9 @@ export default function GetStartedPage() {
       open={createProjectDialogOpen}
       onOpenChange={setCreateProjectDialogOpen}
     >
-      <CreateProjectDialog />
+      <CreateProjectDialog
+        onCreateProjectSucceeded={() => setCreateProjectDialogOpen(false)}
+      />
 
       <div className="flex max-w-7xl flex-col items-start justify-start gap-10 p-10">
         {/* Header */}
