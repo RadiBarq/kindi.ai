@@ -56,7 +56,6 @@ export default function Navbar({
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const { data: session } = useSession();
-  const username = session?.user.name ?? "";
   const email = session?.user.email ?? "";
   const profilePicture = session?.user.image ?? "";
   const closeSheet = () => {

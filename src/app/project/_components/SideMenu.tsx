@@ -144,9 +144,13 @@ export default function SideMenu({
             </Link>
           </div>
           <div className="space-y-1">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Project
-            </h3>
+            <div className="flex flex-row justify-between">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Project
+              </h3>
+              
+
+            </div>
             <ProjectSelectBox />
           </div>
 
