@@ -4,6 +4,10 @@ import { SessionProvider } from "next-auth/react";
 import SideMenu from "./_components/SideMenu";
 import Navbar from "./_components/Navbar";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { useState } from "react";
+import { Project } from "@prisma/client";
+import ErrorView from "@/components/misc/Error";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -13,28 +17,63 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       ? pathSegments[1]
       : "";
   const isGetStarted = pathname === "/project/getStarted";
+  const [projects, setProjects] = useState<Project[] | null>(null);
+  const [projectsError, setProjectsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("/projects");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const result: Project[] = await response.json();
+        setProjects(result);
+      } catch (error: any) {
+        console.error(error.message);
+        setProjectsError(
+          "Unexpected network issue happened, please try refreshing the page later.",
+        );
+      }
+    };
+    fetchProjects();
+  }, []);
+
   return (
     <SessionProvider>
       <div className="relative min-h-screen bg-white p-4 bg-grid-black/[0.2] dark:bg-black dark:bg-grid-white/[0.2]">
-        <Navbar
-          isGetStarted={isGetStarted}
-          email="grayllow@gmail.com"
-          pictureURL={null}
-          projectId="1234"
-          pathname={pathname}
-        />
-        <SideMenu
-          isGetStarted={isGetStarted}
-          projectId={projectId}
-          pathname={pathname}
-        />
-        {!projectId && (
-          <div className="overflow-auto lg:ml-48">Project not found</div>
+        {projects && (
+          <div>
+            <Navbar
+              isGetStarted={isGetStarted}
+              projectId={projectId}
+              pathname={pathname}
+            />
+            <SideMenu
+              isGetStarted={isGetStarted}
+              projectId={projectId}
+              pathname={pathname}
+            />
+            {!projectId && (
+              <div className="overflow-auto lg:ml-48">Project not found</div>
+            )}
+
+            {projectId && (
+              <main className="overflow-auto lg:ml-48">{children}</main>
+            )}
+          </div>
         )}
 
-        {projectId && (
-          <main className="overflow-auto lg:ml-48">{children}</main>
-        )}
+        <div className="m-auto flex h-screen w-full items-center justify-center">
+          {!projects && !projectsError && (
+            <div>
+              <span className="loading loading-spinner w-16"></span>
+              <div className="text-left text-lg font-medium">Loading...</div>
+            </div>
+          )}
+
+          {projectsError && <ErrorView message={projectsError} />}
+        </div>
       </div>
     </SessionProvider>
   );

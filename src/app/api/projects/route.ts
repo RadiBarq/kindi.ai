@@ -52,7 +52,20 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error creating project: ", error);
     return NextResponse.json({
-      message: "Error creating project. Please try again later",
+      message: "Error creating project. Please try again later.",
+      status: 500,
+    });
+  }
+}
+
+export async function GET(_: Request) {
+  try {
+    const projects = await prismaDB.project.findMany();
+    return NextResponse.json({ projects, status: 200 });
+  } catch (error) {
+    console.error("Error fetching projects: ", error);
+    return NextResponse.json({
+      message: "Error fetching projects. Please try again later.",
       status: 500,
     });
   }

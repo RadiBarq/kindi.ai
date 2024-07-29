@@ -44,8 +44,6 @@ import CreateProjectDialog from "../_components/CreateProjectDialog";
 
 interface NavbarProps {
   isGetStarted: boolean;
-  email: string;
-  pictureURL: string | null;
   projectId: string;
   pathname: string;
 }

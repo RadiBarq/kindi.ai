@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import FeedbackDialog from "./FeedbackDialog";
 import { useState } from "react";
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import { Plus } from "lucide-react";
@@ -45,6 +46,11 @@ interface SideMenu {
   isGetStarted: boolean;
   projectId: string;
   pathname: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
 }
 
 export default function SideMenu({
