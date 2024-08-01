@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+import { GeneralError } from "@/lib/types/GeneralError";
 
 interface CreateProjectDialogProps {
   onCreateProjectSucceeded: () => void;
@@ -72,7 +73,8 @@ function InputForm({ onCreateProject, className }: InputFormProps) {
 
       const data = await response.json();
       if (!response.ok || !data.project) {
-        throw new Error(data.message || "Something went wrong!");
+        let error: GeneralError = data;
+        throw new Error(error.message || "Something went wrong!");
       }
       setProjectName("");
       onCreateProject();

@@ -50,6 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               isGetStarted={isGetStarted}
               projectId={projectId}
               pathname={pathname}
+              projects={projects}
             />
             <SideMenu
               isGetStarted={isGetStarted}

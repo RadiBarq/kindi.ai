@@ -222,7 +222,6 @@ interface ProjectSelectBoxProps {
 
 function ProjectSelectBox({ projects, projectId }: ProjectSelectBoxProps) {
   const initialProject = projects.find((project) => project.id === projectId);
-  console.log(projects);
   return (
     <Select value={initialProject?.name ?? ""}>
       <SelectTrigger className="">

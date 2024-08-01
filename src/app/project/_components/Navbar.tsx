@@ -41,16 +41,20 @@ import { Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import CreateProjectDialog from "../_components/CreateProjectDialog";
+import { Project } from "@prisma/client";
 
 interface NavbarProps {
   isGetStarted: boolean;
   projectId: string;
   pathname: string;
+  projects: Project[];
 }
+
 export default function Navbar({
   isGetStarted,
   projectId,
   pathname,
+  projects,
 }: NavbarProps) {
   const rootPath = `/project/${projectId}`;
   const [isOpen, setIsOpen] = useState(false);
@@ -76,7 +80,11 @@ export default function Navbar({
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 lg:hidden">
       <Dialog
         open={feedbackDialogOpen || createProjectDialogOpen}
-        onOpenChange={feedbackDialogOpen ? setFeedbackDialogOpen : setCreateProjectDialogOpen}
+        onOpenChange={
+          feedbackDialogOpen
+            ? setFeedbackDialogOpen
+            : setCreateProjectDialogOpen
+        }
       >
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
@@ -188,7 +196,7 @@ export default function Navbar({
                     <div className="text-xs">New</div>
                   </Button>
                 </div>
-                <ProjectSelectBox />
+                <ProjectSelectBox projects={projects} projectId={projectId} />
               </div>
             </nav>
           </SheetContent>
@@ -238,32 +246,29 @@ export default function Navbar({
   );
 }
 
-function ProjectSelectBox() {
+interface ProjectSelectBoxProps {
+  projectId: string;
+  projects: Project[];
+}
+
+function ProjectSelectBox({ projects, projectId }: ProjectSelectBoxProps) {
+  const initialProject = projects.find((project) => project.id === projectId);
   return (
-    <Select>
+    <Select value={initialProject?.name ?? ""}>
       <SelectTrigger className="text-lg">
         <SelectValue className="text-lg" placeholder="Project" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup className="items-start">
-          <SelectItem className="items-start text-lg" value="project1">
-            Project 1
-          </SelectItem>
-          <SelectItem className="text-lg" value="project2">
-            Project 2
-          </SelectItem>
-          <SelectItem className="text-lg" value="project3">
-            Project 3
-          </SelectItem>
-          <SelectItem className="text-lg" value="project4">
-            Project 4
-          </SelectItem>
-          <SelectItem className="text-lg" value="project5">
-            Project 5
-          </SelectItem>
-          <SelectItem className="text-lg" value="project6">
-            Project 6
-          </SelectItem>
+          {projects.map((project) => (
+            <SelectItem
+              key={project.id}
+              className="text-lg"
+              value={project.name ?? ""}
+            >
+              {project.name}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>
