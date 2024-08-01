@@ -24,9 +24,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const handleFetchProjectsResult = (projects: Project[]) => {
+      const selectedProject = projects.find(
+        (project) => project.id == projectId,
+      );
+
       if (projects.length > 0 && isGetStarted) {
         const firstProject = projects[0];
         router.replace(`/project/${firstProject.id}`);
+        return;
+      }
+
+      if (!selectedProject) {
+        setProjectsError(
+          "Project with the follwoing ID cannot be found, please pick another project",
+        );
         return;
       }
 
@@ -49,7 +60,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
     };
     fetchProjects();
-  }, [isGetStarted, router]);
+  }, [isGetStarted, router, setProjects, projectId]);
 
   const handleProjectChange = (projectId: string) => {
     router.push(`/project/${projectId}`);
