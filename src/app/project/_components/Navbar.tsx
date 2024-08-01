@@ -48,6 +48,7 @@ interface NavbarProps {
   projectId: string;
   pathname: string;
   projects: Project[];
+  onProjectChange: (projectId: string) => void;
 }
 
 export default function Navbar({
@@ -55,6 +56,7 @@ export default function Navbar({
   projectId,
   pathname,
   projects,
+  onProjectChange,
 }: NavbarProps) {
   const rootPath = `/project/${projectId}`;
   const [isOpen, setIsOpen] = useState(false);
@@ -196,7 +198,11 @@ export default function Navbar({
                     <div className="text-xs">New</div>
                   </Button>
                 </div>
-                <ProjectSelectBox projects={projects} projectId={projectId} />
+                <ProjectSelectBox
+                  projects={projects}
+                  projectId={projectId}
+                  onProjectChange={onProjectChange}
+                />
               </div>
             </nav>
           </SheetContent>
@@ -249,21 +255,34 @@ export default function Navbar({
 interface ProjectSelectBoxProps {
   projectId: string;
   projects: Project[];
+  onProjectChange: (projectId: string) => void;
 }
 
-function ProjectSelectBox({ projects, projectId }: ProjectSelectBoxProps) {
+function ProjectSelectBox({
+  projects,
+  projectId,
+  onProjectChange,
+}: ProjectSelectBoxProps) {
+  const onValueChange = (value: string) => {
+    const selectedProject = projects.find((project) => project.name === value);
+    if (!selectedProject) {
+      return;
+    }
+    onProjectChange(selectedProject.id);
+  };
+
   const initialProject = projects.find((project) => project.id === projectId);
   return (
-    <Select value={initialProject?.name ?? ""}>
+    <Select onValueChange={onValueChange} value={initialProject?.name ?? ""}>
       <SelectTrigger className="text-lg">
         <SelectValue className="text-lg" placeholder="Project" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="items-start">
         <SelectGroup className="items-start">
           {projects.map((project) => (
             <SelectItem
               key={project.id}
-              className="text-lg"
+              className="text text-lg"
               value={project.name ?? ""}
             >
               {project.name}

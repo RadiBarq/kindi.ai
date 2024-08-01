@@ -47,6 +47,7 @@ interface SideMenuProps {
   projectId: string;
   pathname: string;
   projects: Project[];
+  onProjectChange: (projectId: string) => void;
 }
 
 export default function SideMenu({
@@ -54,6 +55,7 @@ export default function SideMenu({
   projectId,
   pathname,
   projects,
+  onProjectChange,
 }: SideMenuProps) {
   const rootPath = `/project/${projectId}`;
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
@@ -174,7 +176,11 @@ export default function SideMenu({
                 <div className="text-xs">New</div>
               </Button>
             </div>
-            <ProjectSelectBox projects={projects} projectId={projectId} />
+            <ProjectSelectBox
+              projects={projects}
+              projectId={projectId}
+              onProjectChange={onProjectChange}
+            />
           </div>
 
           <div className="space-y-1 pt-8">
@@ -218,20 +224,33 @@ export default function SideMenu({
 interface ProjectSelectBoxProps {
   projectId: string;
   projects: Project[];
+  onProjectChange: (projectId: string) => void;
 }
 
-function ProjectSelectBox({ projects, projectId }: ProjectSelectBoxProps) {
+function ProjectSelectBox({
+  projects,
+  projectId,
+  onProjectChange,
+}: ProjectSelectBoxProps) {
+  const onValueChange = (value: string) => {
+    const selectedProject = projects.find((project) => project.name === value);
+    if (!selectedProject) {
+      return;
+    }
+    onProjectChange(selectedProject.id);
+  };
+
   const initialProject = projects.find((project) => project.id === projectId);
   return (
-    <Select value={initialProject?.name ?? ""}>
-      <SelectTrigger className="">
+    <Select onValueChange={onValueChange} value={initialProject?.name ?? ""}>
+      <SelectTrigger>
         <SelectValue placeholder="Project" />
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>
+        <SelectGroup className="items-start">
           {projects.map((project) => (
             <SelectItem key={project.id} value={project.name ?? ""}>
-              {project.name}
+              <div className="w-full text-start">{project.name}</div>
             </SelectItem>
           ))}
         </SelectGroup>

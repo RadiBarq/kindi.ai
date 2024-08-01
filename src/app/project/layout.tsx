@@ -23,6 +23,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [projectsError, setProjectsError] = useState<string | null>(null);
 
   useEffect(() => {
+    const handleFetchProjectsResult = (projects: Project[]) => {
+      if (projects.length > 0 && isGetStarted) {
+        const firstProject = projects[0];
+        router.replace(`/project/${firstProject.id}`);
+        return;
+      }
+
+      setProjects(projects);
+    };
+
     const fetchProjects = async () => {
       try {
         const response = await fetch("/api/projects");
@@ -39,7 +49,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
     };
     fetchProjects();
-  }, [handleFetchProjectsResult]);
+  }, [isGetStarted, router]);
+
+  const handleProjectChange = (projectId: string) => {
+    router.push(`/project/${projectId}`);
+  };
 
   return (
     <SessionProvider>
@@ -51,12 +65,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               projectId={projectId}
               pathname={pathname}
               projects={projects}
+              onProjectChange={handleProjectChange}
             />
             <SideMenu
               isGetStarted={isGetStarted}
               projectId={projectId}
               pathname={pathname}
               projects={projects}
+              onProjectChange={handleProjectChange}
             />
             {!projectId && (
               <div className="overflow-auto lg:ml-48">Project not found</div>
@@ -81,14 +97,4 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
     </SessionProvider>
   );
-
-  function handleFetchProjectsResult(projects: Project[]) {
-    if (projects.length > 0 && isGetStarted) {
-      const firstProject = projects[0];
-      router.replace(`/project/${firstProject.id}`);
-      return;
-    }
-
-    setProjects(projects);
-  }
 }
