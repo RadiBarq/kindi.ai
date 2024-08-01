@@ -174,7 +174,7 @@ export default function SideMenu({
                 <div className="text-xs">New</div>
               </Button>
             </div>
-            <ProjectSelectBox projects={projects} />
+            <ProjectSelectBox projects={projects} projectId={projectId} />
           </div>
 
           <div className="space-y-1 pt-8">
@@ -216,13 +216,15 @@ export default function SideMenu({
 }
 
 interface ProjectSelectBoxProps {
+  projectId: string;
   projects: Project[];
 }
 
-function ProjectSelectBox({ projects = [] }: ProjectSelectBoxProps) {
+function ProjectSelectBox({ projects, projectId }: ProjectSelectBoxProps) {
+  const initialProject = projects.find((project) => project.id === projectId);
   console.log(projects);
   return (
-    <Select>
+    <Select value={initialProject?.name ?? ""}>
       <SelectTrigger className="">
         <SelectValue placeholder="Project" />
       </SelectTrigger>

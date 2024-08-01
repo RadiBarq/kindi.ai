@@ -7,10 +7,12 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Project } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import ErrorView from "@/components/misc/Error";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const pathSegments = pathname.split("/").filter(Boolean);
   var projectId =
     pathSegments.length >= 2 && pathSegments[0] === "project"
@@ -28,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           throw new Error("Network response was not ok");
         }
         const result: Project[] = await response.json();
-        setProjects(result);
+        handleFetchProjectsResult(result);
       } catch (error: any) {
         console.error(error.message);
         setProjectsError(
@@ -37,7 +39,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
     };
     fetchProjects();
-  }, []);
+  }, [handleFetchProjectsResult]);
 
   return (
     <SessionProvider>
@@ -78,4 +80,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
     </SessionProvider>
   );
+
+  function handleFetchProjectsResult(projects: Project[]) {
+    if (projects.length > 0 && isGetStarted) {
+      const firstProject = projects[0];
+      router.replace(`/project/${firstProject.id}`);
+      return;
+    }
+
+    setProjects(projects);
+  }
 }
