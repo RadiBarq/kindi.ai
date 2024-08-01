@@ -9,20 +9,24 @@ export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({
-      message: "Operation is not allowed; you need to authenticate first",
-      status: 401,
-    });
+    return NextResponse.json(
+      {
+        message: "Operation is not allowed; you need to authenticate first",
+      },
+      { status: 401 },
+    );
   }
   const userId = session.user.id;
 
   try {
     const validation = await validateNewProjectRequest(req);
     if (!validation.success) {
-      return NextResponse.json({
-        message: validation.error.errors[0].message,
-        status: 400,
-      });
+      return NextResponse.json(
+        {
+          message: validation.error.errors[0].message,
+        },
+        { status: 400 },
+      );
     }
     const { projectName } = validation.data;
 
@@ -44,30 +48,35 @@ export async function POST(req: Request) {
       return newProject;
     });
 
-    return NextResponse.json({
-      message: "Project created successfully.",
-      project: result,
-      status: 201,
-    });
+    return NextResponse.json(
+      {
+        result,
+      },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("Error creating project: ", error);
-    return NextResponse.json({
-      message: "Error creating project. Please try again later.",
-      status: 500,
-    });
+    return NextResponse.json(
+      {
+        message: "Error creating project. Please try again later.",
+      },
+      { status: 500 },
+    );
   }
 }
 
 export async function GET(_: Request) {
   try {
     const projects = await prismaDB.project.findMany();
-    return NextResponse.json({ projects, status: 200 });
+    return NextResponse.json(projects, { status: 200 });
   } catch (error) {
     console.error("Error fetching projects: ", error);
-    return NextResponse.json({
-      message: "Error fetching projects. Please try again later.",
-      status: 500,
-    });
+    return NextResponse.json(
+      {
+        message: "Error fetching projects. Please try again later.",
+      },
+      { status: 500 },
+    );
   }
 }
 

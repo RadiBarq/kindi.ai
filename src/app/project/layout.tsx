@@ -23,7 +23,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch("/projects");
+        const response = await fetch("/api/projects");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -53,6 +53,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               isGetStarted={isGetStarted}
               projectId={projectId}
               pathname={pathname}
+              projects={projects}
             />
             {!projectId && (
               <div className="overflow-auto lg:ml-48">Project not found</div>

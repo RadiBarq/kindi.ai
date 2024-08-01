@@ -36,28 +36,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import FeedbackDialog from "./FeedbackDialog";
 import { useState } from "react";
-import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import { Plus } from "lucide-react";
 import CreateProjectDialog from "../_components/CreateProjectDialog";
+import { Project } from "@prisma/client";
 
-interface SideMenu {
+interface SideMenuProps {
   isGetStarted: boolean;
   projectId: string;
   pathname: string;
-}
-
-interface Project {
-  id: string;
-  name: string;
+  projects: Project[];
 }
 
 export default function SideMenu({
   isGetStarted,
   projectId,
   pathname,
-}: SideMenu) {
+  projects,
+}: SideMenuProps) {
   const rootPath = `/project/${projectId}`;
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const { data: session } = useSession();
@@ -177,7 +174,7 @@ export default function SideMenu({
                 <div className="text-xs">New</div>
               </Button>
             </div>
-            <ProjectSelectBox />
+            <ProjectSelectBox projects={projects} />
           </div>
 
           <div className="space-y-1 pt-8">
@@ -218,7 +215,12 @@ export default function SideMenu({
   );
 }
 
-function ProjectSelectBox() {
+interface ProjectSelectBoxProps {
+  projects: Project[];
+}
+
+function ProjectSelectBox({ projects = [] }: ProjectSelectBoxProps) {
+  console.log(projects);
   return (
     <Select>
       <SelectTrigger className="">
@@ -226,12 +228,11 @@ function ProjectSelectBox() {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="project1">Project 1</SelectItem>
-          <SelectItem value="project2">Project 2</SelectItem>
-          <SelectItem value="project3">Project 3</SelectItem>
-          <SelectItem value="project4">Project 4</SelectItem>
-          <SelectItem value="project5">Project 5</SelectItem>
-          <SelectItem value="project6">Project 6</SelectItem>
+          {projects.map((project) => (
+            <SelectItem key={project.id} value={project.name ?? ""}>
+              {project.name}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>
