@@ -66,6 +66,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     router.push(`/project/${projectId}`);
   };
 
+  const handleOnProjectCreated = (projectId: string) => {
+    router.push(`/project/${projectId}/settings`);
+  };
+
   return (
     <SessionProvider>
       <div className="relative min-h-screen bg-white p-4 bg-grid-black/[0.2] dark:bg-black dark:bg-grid-white/[0.2]">
@@ -77,6 +81,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               pathname={pathname}
               projects={projects}
               onProjectChange={handleProjectChange}
+              onProjectCreated={handleOnProjectCreated}
             />
             <SideMenu
               isGetStarted={isGetStarted}
@@ -84,6 +89,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               pathname={pathname}
               projects={projects}
               onProjectChange={handleProjectChange}
+              onProjectCreated={handleOnProjectCreated}
             />
             {!projectId && (
               <div className="overflow-auto lg:ml-48">Project not found</div>

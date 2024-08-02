@@ -63,12 +63,7 @@ export async function POST(req: Request) {
       return newProject;
     });
 
-    return NextResponse.json(
-      {
-        result,
-      },
-      { status: 201 },
-    );
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Error creating project: ", error);
     return NextResponse.json(

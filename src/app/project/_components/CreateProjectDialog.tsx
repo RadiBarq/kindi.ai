@@ -12,13 +12,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { GeneralError } from "@/lib/types/GeneralError";
+import { Project } from "@prisma/client";
 
 interface CreateProjectDialogProps {
-  onCreateProjectSucceeded: () => void;
+  onProjectCreated: (projectId: string) => void;
 }
 
 export default function CreateProjectDialog({
-  onCreateProjectSucceeded,
+  onProjectCreated,
 }: CreateProjectDialogProps) {
   return (
     <>
@@ -27,14 +28,14 @@ export default function CreateProjectDialog({
           <DialogTitle>New project</DialogTitle>
         </DialogHeader>
         <DialogDescription></DialogDescription>
-        <InputForm onCreateProject={onCreateProjectSucceeded} />
+        <InputForm onCreateProject={onProjectCreated} />
       </DialogContent>
     </>
   );
 }
 
 interface InputFormProps {
-  onCreateProject: () => void;
+  onCreateProject: (projectId: string) => void;
   className?: string;
 }
 
@@ -42,7 +43,6 @@ function InputForm({ onCreateProject, className }: InputFormProps) {
   const [projectName, setProjectName] = useState("");
   const [error, setError] = useState<String | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const projectSchema = z.object({
     projectName: z
       .string()
@@ -50,41 +50,50 @@ function InputForm({ onCreateProject, className }: InputFormProps) {
       .max(100, "Project name must be at most 100 characters"),
   });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    const validation = projectSchema.safeParse({ projectName });
-
-    if (!validation.success) {
-      setError(validation.error.errors[0].message);
-      setIsLoading(false);
-      return;
-    }
-
+  const createProject = async (name: string) => {
     try {
       const response = await fetch("/api/projects/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ projectName }),
+        body: JSON.stringify({ projectName: name }),
       });
 
-      const data = await response.json();
-      if (!response.ok || !data.project) {
-        let error: GeneralError = data;
+      if (!response.ok) {
+        const error: GeneralError = await response.json();
         throw new Error(error.message || "Something went wrong!");
       }
-      setProjectName("");
-      onCreateProject();
-      router.push(`/project/${data.project.id}/settings`);
+      const project: Project = await response.json();
+      onCreateProject(project.id);
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       setError(error.message);
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  const valdiateProject = (name: string) => {
+    const validation = projectSchema.safeParse({ projectName: name });
+    if (!validation.success) {
+      setError(validation.error.errors[0].message);
+      return false;
+    }
+
+    setError(null);
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!valdiateProject(projectName)) {
+      return;
+    }
+
+    setIsLoading(true);
+    await createProject(projectName);
+    setIsLoading(false);
+    setProjectName("");
   };
 
   return (

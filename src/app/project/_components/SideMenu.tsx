@@ -48,6 +48,7 @@ interface SideMenuProps {
   pathname: string;
   projects: Project[];
   onProjectChange: (projectId: string) => void;
+  onProjectCreated: (projectId: string) => void;
 }
 
 export default function SideMenu({
@@ -56,6 +57,7 @@ export default function SideMenu({
   pathname,
   projects,
   onProjectChange,
+  onProjectCreated,
 }: SideMenuProps) {
   const rootPath = `/project/${projectId}`;
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
@@ -68,6 +70,11 @@ export default function SideMenu({
     signOut({ callbackUrl: "/" });
   };
 
+  const handleNewProjectCreated = (projectId: string) => {
+    setCreateProjectDialogOpen(false);
+    onProjectCreated(projectId);
+  };
+
   return (
     <Dialog
       open={feedbackDialogOpen || createProjectDialogOpen}
@@ -78,9 +85,7 @@ export default function SideMenu({
       <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-48 lg:flex">
         {feedbackDialogOpen && <FeedbackDialog />}
         {createProjectDialogOpen && (
-          <CreateProjectDialog
-            onCreateProjectSucceeded={() => setCreateProjectDialogOpen(false)}
-          />
+          <CreateProjectDialog onProjectCreated={handleNewProjectCreated} />
         )}
         <div className="flex items-center justify-between">
           <Image className="h-auto" src={logo} alt="Kindi AI Logo" width={45} />

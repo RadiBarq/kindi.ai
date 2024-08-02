@@ -49,6 +49,7 @@ interface NavbarProps {
   pathname: string;
   projects: Project[];
   onProjectChange: (projectId: string) => void;
+  onProjectCreated: (projectId: string) => void;
 }
 
 export default function Navbar({
@@ -57,6 +58,7 @@ export default function Navbar({
   pathname,
   projects,
   onProjectChange,
+  onProjectCreated,
 }: NavbarProps) {
   const rootPath = `/project/${projectId}`;
   const [isOpen, setIsOpen] = useState(false);
@@ -73,8 +75,9 @@ export default function Navbar({
     signOut({ callbackUrl: "/" });
   };
 
-  const handleOnNewProjectCreated = () => {
+  const handleOnNewProjectCreated = (projectId: string) => {
     setCreateProjectDialogOpen(false);
+    onProjectCreated(projectId);
     closeSheet();
   };
 
@@ -209,9 +212,7 @@ export default function Navbar({
         </Sheet>
         {feedbackDialogOpen && <FeedbackDialog />}
         {createProjectDialogOpen && (
-          <CreateProjectDialog
-            onCreateProjectSucceeded={handleOnNewProjectCreated}
-          />
+          <CreateProjectDialog onProjectCreated={handleOnNewProjectCreated} />
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
