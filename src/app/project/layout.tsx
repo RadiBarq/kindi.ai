@@ -34,14 +34,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      if (!selectedProject) {
-        setProjectsError(
-          "Project with the follwoing ID cannot be found, please pick another project",
-        );
+      setProjects(projects);
+
+      if (isGetStarted) {
         return;
       }
 
-      setProjects(projects);
+      if (projects.length <= 0) {
+        router.replace("/project/getStarted");
+        return;
+      }
+
+      if (!selectedProject) {
+        setProjectsError(
+          "Project with the follwoing ID cannot be found, please pick another project.",
+        );
+        return;
+      }
     };
 
     const fetchProjects = async () => {

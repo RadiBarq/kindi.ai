@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       { status: 401 },
     );
   }
+
   const userId = session.user.id;
 
   try {
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
 
     // Check if a project with the same name already exists
     const existingProject = await prismaDB.project.findUnique({
-      where: { name: projectName },
+      where: { name: projectName, users: { some: { userId } } },
     });
 
     if (existingProject) {
@@ -77,7 +78,37 @@ export async function POST(req: Request) {
 
 export async function GET(_: Request) {
   try {
-    const projects = await prismaDB.project.findMany();
+    const userIdSchema = z.string().uuid();
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json(
+        {
+          message: "Operation is not allowed; you need to authenticate first",
+        },
+        { status: 401 },
+      );
+    }
+
+    const userId = session.user.id;
+
+    // Validate the userId
+    const validation = userIdSchema.safeParse(userId);
+
+    if (!validation.success) {
+      return NextResponse.json({ message: "Invalid User ID" }, { status: 400 });
+    }
+
+    const projects = await prismaDB.project.findMany({
+      where: {
+        users: {
+          some: {
+            userId: validation.data,
+          },
+        },
+      },
+    });
+
     return NextResponse.json(projects, { status: 200 });
   } catch (error) {
     console.error("Error fetching projects: ", error);

@@ -5,9 +5,11 @@ import { useState } from "react";
 import ActionCard from "../_components/ActionCard";
 import { useSession } from "next-auth/react";
 import CreateProjectDialog from "../_components/CreateProjectDialog";
+import { useRouter } from "next/navigation";
 
 export default function GetStartedPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
   if (!session || status != "authenticated") {
     return <div>Loading</div>;
@@ -17,8 +19,12 @@ export default function GetStartedPage() {
     setCreateProjectDialogOpen(true);
   };
 
-  const handleGoToDemoProject = () => {};
+  const handleNewProjectCreated = (projectId: string) => {
+    setCreateProjectDialogOpen(false);
+    router.push(`/project/${projectId}/settings`);
+  };
 
+  const handleGoToDemoProject = () => {};
   const handleScheduleCallWithFounder = () => {};
 
   console.log(`User id is ${session.user.id}`);
@@ -27,9 +33,7 @@ export default function GetStartedPage() {
       open={createProjectDialogOpen}
       onOpenChange={setCreateProjectDialogOpen}
     >
-      <CreateProjectDialog
-        onCreateProjectSucceeded={() => setCreateProjectDialogOpen(false)}
-      />
+      <CreateProjectDialog onProjectCreated={handleNewProjectCreated} />
 
       <div className="flex max-w-7xl flex-col items-start justify-start gap-10 p-10">
         {/* Header */}
