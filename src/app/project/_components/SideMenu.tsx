@@ -65,7 +65,7 @@ export default function SideMenu({
   const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
   const username = session?.user.name ?? "";
   const email = session?.user.email ?? "";
-
+  
   const onClickLogout = () => {
     signOut({ callbackUrl: "/" });
   };

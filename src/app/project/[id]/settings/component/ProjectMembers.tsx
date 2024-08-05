@@ -20,7 +20,7 @@ export default function ProjectMembers() {
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="text-2xl font-bold">Project Members</div>
-      <div className="border-gray-1000 w-full rounded-lg border bg-gray-100 bg-opacity-30 shadow-md shadow-gray-200">
+      <div className="border-gray-1000 w-full rounded-lg border bg-white bg-opacity-60 shadow-md shadow-gray-200">
         <Table>
           <TableHeader>
             <TableRow className="">

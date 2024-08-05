@@ -107,8 +107,19 @@ export async function GET(_: Request) {
           },
         },
       },
+      include: {
+        users: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
+    session.user.projects = projects.map((project) => {
+      const currentUser = project.users.find((user) => user.id === userId);
+      return { id: project.id, name: project.name, role: currentUser?.role };
+    });
     return NextResponse.json(projects, { status: 200 });
   } catch (error) {
     console.error("Error fetching projects: ", error);
