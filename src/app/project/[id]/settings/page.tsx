@@ -12,10 +12,7 @@ import { useEffect } from "react";
 
 export default function Settings() {
   const { data: session } = useSession();
-
-  useEffect(() => {
-    console.log(session?.user.projects);
-  });
+  console.log(session?.user.projects);
   return (
     <div className="flex max-w-7xl flex-col items-start justify-start gap-10 p-10">
       {/* Header */}

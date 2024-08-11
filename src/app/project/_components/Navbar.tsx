@@ -38,35 +38,37 @@ import FeedbackDialog from "./FeedbackDialog";
 import { Dialog } from "@/components/ui/dialog";
 const { version } = packageInfo;
 import { Plus } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import CreateProjectDialog from "../_components/CreateProjectDialog";
-import { Project } from "@prisma/client";
 
 interface NavbarProps {
-  isGetStarted: boolean;
-  projectId: string;
+  withProjectSettings: boolean;
   pathname: string;
-  projects: Project[];
-  onProjectChange: (projectId: string) => void;
-  onProjectCreated: (projectId: string) => void;
+  user: {
+    email: string | null | undefined;
+    profilePicture: string | null | undefined;
+  };
+  projectId: string | null;
+  projects: {
+    id: string;
+    name: string | null;
+    role: any;
+  }[];
 }
 
 export default function Navbar({
-  isGetStarted,
-  projectId,
+  withProjectSettings,
   pathname,
   projects,
-  onProjectChange,
-  onProjectCreated,
+  projectId,
+  user,
 }: NavbarProps) {
   const rootPath = `/project/${projectId}`;
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
-  const { data: session } = useSession();
-  const email = session?.user.email ?? "";
-  const profilePicture = session?.user.image ?? "";
+  const router = useRouter();
   const closeSheet = () => {
     setIsOpen(false);
   };
@@ -77,8 +79,12 @@ export default function Navbar({
 
   const handleOnNewProjectCreated = (projectId: string) => {
     setCreateProjectDialogOpen(false);
-    onProjectCreated(projectId);
     closeSheet();
+    router.push(`${projectId}`);
+  };
+
+  const onProjectChange = (projectId: string) => {
+    router.push(`${projectId}`);
   };
 
   return (
@@ -114,7 +120,7 @@ export default function Navbar({
                 <span className="text-lg font-bold">Kindi AI</span>
                 <span className="text-sm">v{version}</span>
               </Link>
-              {!isGetStarted && (
+              {withProjectSettings && projectId && (
                 <>
                   <Link
                     href={`${rootPath}/`}
@@ -221,11 +227,11 @@ export default function Navbar({
               size="icon"
               className="overflow-hidden rounded-full"
             >
-              {!profilePicture && <UserRound />}
-              {profilePicture && (
+              {!user.profilePicture && <UserRound />}
+              {user.profilePicture && (
                 <Image
                   className="h-auto"
-                  src={profilePicture}
+                  src={user.profilePicture}
                   alt="User profile image"
                   width={45}
                   height={45}
@@ -234,7 +240,7 @@ export default function Navbar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{email}</DropdownMenuLabel>
+            <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer">
               Settings
@@ -254,8 +260,12 @@ export default function Navbar({
 }
 
 interface ProjectSelectBoxProps {
-  projectId: string;
-  projects: Project[];
+  projectId: string | null;
+  projects: {
+    id: string;
+    name: string | null;
+    role: any;
+  }[];
   onProjectChange: (projectId: string) => void;
 }
 

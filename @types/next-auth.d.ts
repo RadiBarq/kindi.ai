@@ -6,6 +6,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
+      emailVerified: string;
       projects: {
         id: PrismaProject["id"];
         name: PrismaProject["name"];

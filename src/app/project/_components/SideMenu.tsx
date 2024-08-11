@@ -36,43 +36,49 @@ import {
 } from "@/components/ui/dropdown-menu";
 import FeedbackDialog from "./FeedbackDialog";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Plus } from "lucide-react";
 import CreateProjectDialog from "../_components/CreateProjectDialog";
-import { Project } from "@prisma/client";
 
 interface SideMenuProps {
-  isGetStarted: boolean;
-  projectId: string;
+  withProjectSettings: boolean;
+  projectId: string | null;
   pathname: string;
-  projects: Project[];
-  onProjectChange: (projectId: string) => void;
-  onProjectCreated: (projectId: string) => void;
+  projects: {
+    id: string;
+    name: string | null;
+    role: any;
+  }[];
+  user: {
+    email: string | null | undefined;
+    profilePicture: string | null | undefined;
+    name: string | null | undefined;
+  };
 }
 
 export default function SideMenu({
-  isGetStarted,
+  withProjectSettings,
   projectId,
   pathname,
   projects,
-  onProjectChange,
-  onProjectCreated,
+  user,
 }: SideMenuProps) {
   const rootPath = `/project/${projectId}`;
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
-  const { data: session } = useSession();
   const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
-  const username = session?.user.name ?? "";
-  const email = session?.user.email ?? "";
-  
+  const router = useRouter();
   const onClickLogout = () => {
     signOut({ callbackUrl: "/" });
   };
 
   const handleNewProjectCreated = (projectId: string) => {
     setCreateProjectDialogOpen(false);
-    onProjectCreated(projectId);
+    router.push(`${projectId}`);
+  };
+
+  const onProjectChange = (projectId: string) => {
+    router.push(`${projectId}`);
   };
 
   return (
@@ -93,7 +99,7 @@ export default function SideMenu({
           <span className="text-xs font-medium">v{version}</span>
         </div>
         <nav className="mt-8 flex flex-col space-y-2">
-          {!isGetStarted && (
+          {withProjectSettings && projectId && (
             <div className="space-y-1">
               <h3 className="text-sm font-medium text-muted-foreground">
                 Main
@@ -193,32 +199,30 @@ export default function SideMenu({
               Profile
             </h3>
 
-            {session && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full px-3">
-                    <div className="flex w-full items-start justify-between ">
-                      <div className="text-sm font-medium">{username}</div>
-                      <ChevronDown className="ml-2 mt-1 h-4 w-4" color="gray" />
-                    </div>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>{email}</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer">
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={onClickLogout}
-                  >
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full px-3">
+                  <div className="flex w-full items-start justify-between ">
+                    <div className="text-sm font-medium">{user.name}</div>
+                    <ChevronDown className="ml-2 mt-1 h-4 w-4" color="gray" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer">
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={onClickLogout}
+                >
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </nav>
       </div>
@@ -227,8 +231,12 @@ export default function SideMenu({
 }
 
 interface ProjectSelectBoxProps {
-  projectId: string;
-  projects: Project[];
+  projectId: string | null;
+  projects: {
+    id: string;
+    name: string | null;
+    role: any;
+  }[];
   onProjectChange: (projectId: string) => void;
 }
 

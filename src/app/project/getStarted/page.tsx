@@ -8,12 +8,8 @@ import CreateProjectDialog from "../_components/CreateProjectDialog";
 import { useRouter } from "next/navigation";
 
 export default function GetStartedPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
-  if (!session || status != "authenticated") {
-    return <div>Loading</div>;
-  }
 
   const handleCreateNewProject = () => {
     setCreateProjectDialogOpen(true);
@@ -27,7 +23,6 @@ export default function GetStartedPage() {
   const handleGoToDemoProject = () => {};
   const handleScheduleCallWithFounder = () => {};
 
-  console.log(`User id is ${session.user.id}`);
   return (
     <Dialog
       open={createProjectDialogOpen}

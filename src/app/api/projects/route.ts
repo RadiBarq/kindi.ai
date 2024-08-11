@@ -2,7 +2,7 @@ import prismaDB from "@/lib/db/prisma";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import { ProjectRole } from "@prisma/client";
+import { Project, ProjectRole } from "@prisma/client";
 import { z } from "zod";
 
 export async function POST(req: Request) {
@@ -107,18 +107,6 @@ export async function GET(_: Request) {
           },
         },
       },
-      include: {
-        users: {
-          include: {
-            user: true,
-          },
-        },
-      },
-    });
-
-    session.user.projects = projects.map((project) => {
-      const currentUser = project.users.find((user) => user.id === userId);
-      return { id: project.id, name: project.name, role: currentUser?.role };
     });
     return NextResponse.json(projects, { status: 200 });
   } catch (error) {

@@ -8,6 +8,7 @@ import { Adapter } from "next-auth/adapters";
 import { compare } from "bcrypt";
 import prismaDB from "@/lib/db/prisma";
 import { encode, decode } from "next-auth/jwt";
+import { z } from "zod";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -37,12 +38,13 @@ export const authOptions: NextAuthOptions = {
         const email = credentials?.email ?? "";
         const password = credentials?.password ?? "";
 
-        if (typeof email !== "string" || typeof password !== "string") {
+        if (!email || !password) {
+          console.error("Email or password not found");
           return null;
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!z.string().email().safeParse(email).success) {
+          console.error("Invalid email fromat found!");
           return null;
         }
 
@@ -76,11 +78,48 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       console.log("session callback", { session, token });
+
+      const dbUser = await prismaDB.user.findUnique({
+        where: {
+          email: token.email!.toLowerCase(),
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          emailVerified: true,
+          image: true,
+          projects: {
+            include: {
+              project: true,
+            },
+          },
+        },
+      });
+
+      const sessionUser =
+        dbUser != null
+          ? {
+              ...session.user,
+              id: dbUser.id,
+              email: dbUser.email,
+              image: dbUser.image,
+              emailVerified: dbUser.emailVerified?.toISOString(),
+              projects: dbUser.projects.map((projectUser) => {
+                return {
+                  id: projectUser.project.id,
+                  name: projectUser.project.name,
+                  role: projectUser.role,
+                };
+              }),
+            }
+          : null;
+
+      console.log(sessionUser);
       return {
         ...session,
         user: {
-          ...session.user,
-          id: token.id,
+          ...sessionUser,
         },
       };
     },
