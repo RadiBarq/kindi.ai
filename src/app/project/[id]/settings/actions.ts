@@ -1,0 +1,39 @@
+"use server";
+import prismaDB from "@/lib/db/prisma";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { ProjectMembers } from "./types/projects";
+
+export async function getProjectMembers(
+  projectId: string,
+): Promise<ProjectMembers> {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  const userId = session.user.id;
+  const project = await prismaDB.projectUser.findFirst({
+    where: {
+      projectId: projectId,
+      userId: userId,
+    },
+  });
+
+  if (!project) {
+    throw Error(
+      "Cannot find the project or you don't have access to the requested project.",
+    );
+  }
+
+  const users: ProjectMembers = await prismaDB.projectUser.findMany({
+    where: {
+      projectId: projectId,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  return users;
+}
