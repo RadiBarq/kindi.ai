@@ -80,11 +80,11 @@ export default function Navbar({
   const handleOnNewProjectCreated = (projectId: string) => {
     setCreateProjectDialogOpen(false);
     closeSheet();
-    router.push(`${projectId}`);
+    router.push(`/project/${projectId}`);
   };
 
   const onProjectChange = (projectId: string) => {
-    router.push(`${projectId}`);
+    router.push(`/project/${projectId}`);
   };
 
   return (

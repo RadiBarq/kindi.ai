@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { ProjectRole } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export async function POST(req: Request) {
@@ -63,7 +64,7 @@ export async function POST(req: Request) {
 
       return newProject;
     });
-
+    revalidatePath("/project");
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Error creating project: ", error);

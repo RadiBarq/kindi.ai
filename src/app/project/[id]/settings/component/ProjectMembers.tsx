@@ -15,10 +15,22 @@ import { ProjectMembers } from "../types/projects";
 
 interface ProjectMembersProps {
   members: ProjectMembers;
+  hasDeleteAccess: boolean;
+  currentUserId: string;
+  isOwner: boolean;
+  deleteProjectMemberAction: (member: string) => void;
 }
 
-export default function ProjectMembersProps({ members }: ProjectMembersProps) {
-  const deleteMemberHandler = () => {};
+export default function ProjectMembersProps({
+  members,
+  hasDeleteAccess,
+  currentUserId,
+  isOwner,
+  deleteProjectMemberAction,
+}: ProjectMembersProps) {
+  const deleteMemberHandler = async (memeber: string) => {
+    await deleteProjectMemberAction(memeber);
+  };
   const addNewMemberHandler = () => {};
 
   return (
@@ -34,20 +46,24 @@ export default function ProjectMembersProps({ members }: ProjectMembersProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {members.map((memeber) => (
-              <TableRow key={memeber.id}>
+            {members.map((member) => (
+              <TableRow key={member.id}>
                 <TableCell className="font-medium text-gray-600">
-                  {memeber.user.name}
+                  {member.user.name}
                 </TableCell>
                 <TableCell className="text-gray-600">
-                  {memeber.user.email}
+                  {member.user.email}
                 </TableCell>
-                <TableCell className="text-gray-600">{memeber.role}</TableCell>
+                <TableCell className="text-gray-600">{member.role}</TableCell>
                 <TableCell className="text-gray-600">
-                  <Trash
-                    className="h-5 w-5 cursor-pointer"
-                    onClick={deleteMemberHandler}
-                  />
+                  {hasDeleteAccess &&
+                    isOwner &&
+                    !(member.userId === currentUserId) && (
+                      <Trash
+                        className="h-5 w-5 cursor-pointer"
+                        onClick={() => deleteMemberHandler(member.id)}
+                      />
+                    )}
                 </TableCell>
               </TableRow>
             ))}

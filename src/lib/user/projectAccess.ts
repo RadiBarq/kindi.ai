@@ -15,7 +15,7 @@ type HasAccessParams =
       scope: Scope;
     };
 
-export const useHasAcess = (p: { projectId: string; scope: Scope }) => {
+export const useHasAcecss = (p: { projectId: string; scope: Scope }) => {
   const { scope, projectId } = p;
   const session = useSession();
   if (!projectId) return false;
@@ -26,7 +26,7 @@ export function hasAccess(p: HasAccessParams): boolean {
   const projectRole: ProjectRole | undefined =
     "role" in p
       ? p.role
-      : p.session?.user?..find((project) => project.id === p.projectId)
+      : p.session?.user?.projects.find((project) => project.id === p.projectId)
           ?.role;
   if (projectRole === undefined) return false;
 

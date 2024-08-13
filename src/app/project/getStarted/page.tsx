@@ -3,7 +3,6 @@
 import { Dialog } from "@/components/ui/dialog";
 import { useState } from "react";
 import ActionCard from "../_components/ActionCard";
-import { useSession } from "next-auth/react";
 import CreateProjectDialog from "../_components/CreateProjectDialog";
 import { useRouter } from "next/navigation";
 

@@ -74,11 +74,11 @@ export default function SideMenu({
 
   const handleNewProjectCreated = (projectId: string) => {
     setCreateProjectDialogOpen(false);
-    router.push(`${projectId}`);
+    router.push(`/project/${projectId}`);
   };
 
   const onProjectChange = (projectId: string) => {
-    router.push(`${projectId}`);
+    router.push(`/project/${projectId}`);
   };
 
   return (

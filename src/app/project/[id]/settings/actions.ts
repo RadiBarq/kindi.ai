@@ -3,6 +3,7 @@ import prismaDB from "@/lib/db/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { ProjectMembers } from "./types/projects";
+import { revalidatePath } from "next/cache";
 
 export async function getProjectMembers(
   projectId: string,
@@ -36,4 +37,19 @@ export async function getProjectMembers(
   });
 
   return users;
+}
+
+export async function deleteProjectMember(memberId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  await prismaDB.projectUser.delete({
+    where: {
+      id: memberId,
+    },
+  });
+
+  revalidatePath("/project/settings");
 }
