@@ -1,49 +1,16 @@
 import { ProjectRole } from "@prisma/client";
 
 const scopes = [
+  // Members
   "members:read",
   "members:create",
   "members:delete",
 
-  "apiKeys:read",
-  "apiKeys:create",
-  "apiKeys:delete",
-
-  "objects:publish",
-  "objects:bookmark",
-  "objects:tag",
-
-  "traces:delete",
-
-  "scores:CUD",
-
-  "scoreConfigs:CUD",
-  "scoreConfigs:read",
-
+  // Projects
   "project:delete",
   "project:update",
   "project:transfer",
-  "integrations:CRUD",
-
-  "datasets:CUD",
-
-  "prompts:CUD",
-  "prompts:read",
-
-  "models:CUD",
-
-  "batchExport:create",
-
-  "evalTemplate:create",
-  "evalTemplate:read",
-  "evalJob:read",
-  "evalJob:CUD",
-  "evalJobExecution:read",
-
-  "llmApiKeys:read",
-  "llmApiKeys:create",
-  "llmApiKeys:delete",
-] as const;
+];
 
 export type Scope = (typeof scopes)[number];
 

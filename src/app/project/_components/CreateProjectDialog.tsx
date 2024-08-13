@@ -9,9 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { z } from "zod";
-import { GeneralError } from "@/lib/types/GeneralError";
 import { Project } from "@prisma/client";
 
 interface CreateProjectDialogProps {
@@ -61,8 +59,8 @@ function InputForm({ onCreateProject, className }: InputFormProps) {
       });
 
       if (!response.ok) {
-        const error: GeneralError = await response.json();
-        throw new Error(error.message || "Something went wrong!");
+        const result = await response.json();
+        throw new Error(result.message || "Something went wrong!");
       }
       const project: Project = await response.json();
       onCreateProject(project.id);

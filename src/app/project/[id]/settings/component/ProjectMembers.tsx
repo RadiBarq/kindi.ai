@@ -11,10 +11,14 @@ import {
 import ProjectInvites from "./ProjectInvites";
 import { Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ProjectMembers } from "../types/projects";
 
-export default function ProjectMembers() {
+interface ProjectMembersProps {
+  members: ProjectMembers;
+}
+
+export default function ProjectMembersProps({ members }: ProjectMembersProps) {
   const deleteMemberHandler = () => {};
-
   const addNewMemberHandler = () => {};
 
   return (
@@ -24,54 +28,29 @@ export default function ProjectMembers() {
         <Table>
           <TableHeader>
             <TableRow className="">
-              <TableHead className="w-[100px] text-gray-900">Name</TableHead>
+              <TableHead className="w-[200px] text-gray-900">Name</TableHead>
               <TableHead className="w-[400px] text-gray-900">Email</TableHead>
               <TableHead className="text-gray-900">Role</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell className="font-medium text-gray-600">
-                Radi barq
-              </TableCell>
-              <TableCell className="text-gray-600">
-                radibaraq@gmail.com
-              </TableCell>
-              <TableCell className="text-gray-600">Admin</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium text-gray-600">
-                Radi barq
-              </TableCell>
-              <TableCell className="text-gray-600">
-                radibaraq@gmail.com
-              </TableCell>
-              <TableCell className="text-gray-600">Admin</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium text-gray-600">
-                Radi barq
-              </TableCell>
-              <TableCell className="text-gray-600">
-                radibaraq@gmail.com
-              </TableCell>
-              <TableCell className="text-gray-600">Admin</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium text-gray-600">
-                Radi barq
-              </TableCell>
-              <TableCell className="text-gray-600">
-                radibaraq@gmail.com
-              </TableCell>
-              <TableCell className="text-gray-600">Admin</TableCell>
-              <TableCell className="text-gray-600">
-                <Trash
-                  className="h-5 w-5 cursor-pointer"
-                  onClick={deleteMemberHandler}
-                />
-              </TableCell>
-            </TableRow>
+            {members.map((memeber) => (
+              <TableRow key={memeber.id}>
+                <TableCell className="font-medium text-gray-600">
+                  {memeber.user.name}
+                </TableCell>
+                <TableCell className="text-gray-600">
+                  {memeber.user.email}
+                </TableCell>
+                <TableCell className="text-gray-600">{memeber.role}</TableCell>
+                <TableCell className="text-gray-600">
+                  <Trash
+                    className="h-5 w-5 cursor-pointer"
+                    onClick={deleteMemberHandler}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>

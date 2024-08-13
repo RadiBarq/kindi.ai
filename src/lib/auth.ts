@@ -9,6 +9,12 @@ import { compare } from "bcrypt";
 import prismaDB from "@/lib/db/prisma";
 import { encode, decode } from "next-auth/jwt";
 import { z } from "zod";
+import type {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from "next";
+import { getServerSession } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -66,7 +72,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       console.log("jwt callback", { token, user });
       if (user) {
         return {
@@ -101,6 +107,7 @@ export const authOptions: NextAuthOptions = {
         dbUser != null
           ? {
               ...session.user,
+              accessToken: token.sub,
               id: dbUser.id,
               email: dbUser.email,
               image: dbUser.image,
@@ -114,8 +121,6 @@ export const authOptions: NextAuthOptions = {
               }),
             }
           : null;
-
-      console.log(sessionUser);
       return {
         ...session,
         user: {
@@ -138,4 +143,14 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   jwt: { encode, decode },
-};
+} satisfies NextAuthOptions;
+
+// Use it in server contexts
+export function auth(
+  ...args:
+    | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
+    | [NextApiRequest, NextApiResponse]
+    | []
+) {
+  return getServerSession(...args, authOptions);
+}

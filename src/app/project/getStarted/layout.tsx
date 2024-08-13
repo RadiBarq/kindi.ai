@@ -12,7 +12,6 @@ export default async function Layout({
 }) {
   const headerList = headers();
   const pathname = headerList.get("x-current-path") ?? "";
-  console.log(`Path name is ${pathname}`);
   const session = await getServerSession(authOptions);
   const projects = session?.user.projects ?? [];
 
@@ -20,12 +19,16 @@ export default async function Layout({
     redirect(`/project/${projects[0].id}`);
   }
 
+  if (!session) {
+    redirect("/");
+  }
+
   return (
     <div className="relative min-h-screen bg-white p-4 bg-grid-black/[0.2] dark:bg-black dark:bg-grid-white/[0.2]">
       {projects && (
         <div>
           <Navbar
-            isGetStarted={true}
+            withProjectSettings={false}
             projectId={null}
             pathname={pathname}
             projects={projects}
@@ -35,7 +38,7 @@ export default async function Layout({
             }}
           />
           <SideMenu
-            withProjectSettings={true}
+            withProjectSettings={false}
             projectId={null}
             pathname={pathname}
             projects={projects}

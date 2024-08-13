@@ -2,7 +2,7 @@ import prismaDB from "@/lib/db/prisma";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import { Project, ProjectRole } from "@prisma/client";
+import { ProjectRole } from "@prisma/client";
 import { z } from "zod";
 
 export async function POST(req: Request) {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   const userId = session.user.id;
 
   try {
-    const validation = await validateNewProjectRequest(req);
+    const validation = await validatePostRequestInputs(req);
     if (!validation.success) {
       return NextResponse.json(
         {
@@ -78,9 +78,7 @@ export async function POST(req: Request) {
 
 export async function GET(_: Request) {
   try {
-    const userIdSchema = z.string().uuid();
     const session = await getServerSession(authOptions);
-
     if (!session) {
       return NextResponse.json(
         {
@@ -91,23 +89,16 @@ export async function GET(_: Request) {
     }
 
     const userId = session.user.id;
-
-    // Validate the userId
-    const validation = userIdSchema.safeParse(userId);
-
-    if (!validation.success) {
-      return NextResponse.json({ message: "Invalid User ID" }, { status: 400 });
-    }
-
     const projects = await prismaDB.project.findMany({
       where: {
         users: {
           some: {
-            userId: validation.data,
+            userId: userId,
           },
         },
       },
     });
+
     return NextResponse.json(projects, { status: 200 });
   } catch (error) {
     console.error("Error fetching projects: ", error);
@@ -120,12 +111,12 @@ export async function GET(_: Request) {
   }
 }
 
-async function validateNewProjectRequest(req: Request) {
+async function validatePostRequestInputs(req: Request) {
   const projectSchema = z.object({
     projectName: z
       .string()
-      .min(1, "Project name is required")
-      .max(100, "Project name must be at most 100 characters"),
+      .min(1, "Project name is required.")
+      .max(100, "Project name must be at most 100 characters."),
   });
 
   const body = await req.json();

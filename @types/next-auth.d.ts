@@ -7,6 +7,7 @@ declare module "next-auth" {
     user: {
       id: string;
       emailVerified: string;
+      accessToken: string | undefined;
       projects: {
         id: PrismaProject["id"];
         name: PrismaProject["name"];

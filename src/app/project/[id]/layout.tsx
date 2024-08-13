@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import ErrorView from "@/components/misc/Error";
+import ErrorMessage from "@/components/misc/Error";
 
 export default async function Layout({
   children,
@@ -13,13 +13,20 @@ export default async function Layout({
   children: React.ReactNode;
   params: { id: string };
 }) {
-  const id = params.id;
+  const projectId = params.id;
   const headerList = headers();
   const pathname = headerList.get("x-current-path") ?? "";
   console.log(`Path name is ${pathname}`);
   const session = await getServerSession(authOptions);
   const projects = session?.user.projects ?? [];
-  const isProjectFound = Boolean(projects.find((project) => project.id == id));
+
+  if (!session) {
+    redirect("/");
+  }
+
+  const isProjectFound = Boolean(
+    projects.find((project) => project.id == projectId),
+  );
 
   if (projects.length <= 0) {
     redirect("/project/getStarted");
@@ -31,7 +38,7 @@ export default async function Layout({
         <div>
           <Navbar
             withProjectSettings={isProjectFound}
-            projectId={id}
+            projectId={projectId}
             pathname={pathname}
             projects={projects}
             user={{
@@ -41,7 +48,7 @@ export default async function Layout({
           />
           <SideMenu
             withProjectSettings={isProjectFound}
-            projectId={id}
+            projectId={projectId}
             pathname={pathname}
             projects={projects}
             user={{
@@ -56,7 +63,10 @@ export default async function Layout({
 
           {!isProjectFound && (
             <div className="px-10 py-32">
-              <ErrorView message={"404 | Project Not Found"} />
+              <ErrorMessage
+                withImage={false}
+                message={"404 | Project Not Found"}
+              />
             </div>
           )}
         </div>
