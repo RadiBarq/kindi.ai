@@ -7,7 +7,6 @@ type HasAccessParams =
   | {
       role: ProjectRole;
       scope: Scope;
-      admin?: boolean; // prop user.admin
     }
   | {
       session: null | Session;

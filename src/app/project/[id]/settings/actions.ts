@@ -4,6 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { ProjectMembers } from "./types/projects";
 import { revalidatePath } from "next/cache";
+import { ProjectRole } from "@prisma/client";
+import { hasAccess } from "@/lib/user/projectAccess";
+import { ProjectUserInvite } from "@prisma/client";
 
 export async function getProjectMembers(
   projectId: string,
@@ -52,4 +55,41 @@ export async function deleteProjectMember(memberId: string) {
   });
 
   revalidatePath("/project/settings");
+}
+
+export async function createNewProjectMemberInvite(
+  projectId: string,
+  email: string,
+  role: ProjectRole,
+  sentByUserId: string,
+) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  if (
+    !hasAccess({
+      session: session,
+      projectId: projectId,
+      scope: "members:create",
+    })
+  ) {
+    throw Error("Operation is not allowed; you don't have authorization");
+  }
+
+  const memberInvite: ProjectUserInvite =
+    await prismaDB.projectUserInvite.create({
+      data: {
+        projectId,
+        email,
+        role,
+        sentByUserId,
+      },
+    });
+  // TODO Sent invitation email to the user here.
+
+  revalidatePath("/project/settings");
+  return memberInvite;
 }

@@ -16,32 +16,38 @@ export default function ProjectInvites() {
         <Table>
           <TableHeader>
             <TableRow className="">
-              <TableHead className=" w-[400px] text-gray-900">Email</TableHead>
-              <TableHead className=" w-[100px] text-gray-900">Role</TableHead>
-              <TableHead className=" text-gray-900">Sent by</TableHead>
+              <TableHead className=" w-[400px] font-semibold text-gray-900">
+                Email
+              </TableHead>
+              <TableHead className=" w-[100px] font-semibold text-gray-900">
+                Role
+              </TableHead>
+              <TableHead className=" font-semibold text-gray-900">
+                Sent by
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell className="font-medium text-gray-600">
+              <TableCell className="font-medium text-gray-900">
                 radibaraq@gmail.com
               </TableCell>
-              <TableCell className="text-gray-600">MEMBER</TableCell>
-              <TableCell className="text-gray-600">Radi Barq</TableCell>
+              <TableCell className="text-gray-900">MEMBER</TableCell>
+              <TableCell className="text-gray-900">Radi Barq</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium text-gray-600">
+              <TableCell className="font-medium text-gray-900">
                 radibaraq@gmail.com
               </TableCell>
-              <TableCell className="text-gray-600">MEMBER</TableCell>
-              <TableCell className="text-gray-600">Radi Barq</TableCell>
+              <TableCell className="text-gray-900">MEMBER</TableCell>
+              <TableCell className="text-gray-900">Radi Barq</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium text-gray-600">
+              <TableCell className="font-medium text-gray-900">
                 radibaraq@gmail.com
               </TableCell>
-              <TableCell className="text-gray-600">MEMBER</TableCell>
-              <TableCell className="text-gray-600">Radi Barq</TableCell>
+              <TableCell className="text-gray-900">MEMBER</TableCell>
+              <TableCell className="text-gray-900">Radi Barq</TableCell>
             </TableRow>
           </TableBody>
         </Table>

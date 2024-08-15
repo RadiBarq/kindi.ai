@@ -37,15 +37,15 @@ model Session {
 }
 
 model User {
-  id            String          @id @default(uuid())
-  createdAt     DateTime        @default(now())
+  id            String              @id @default(uuid())
+  createdAt     DateTime            @default(now())
   name          String?
-  email         String?         @unique
-  emailVerified DateTime?       @map("email_verified")
+  email         String?             @unique
+  emailVerified DateTime?           @map("email_verified")
   image         String?
   password      String?
   accounts      Account[]
-  invites       ProjectInvite[]
+  invites       ProjectUserInvite[]
   projects      ProjectUser[]
   sessions      Session[]
 
@@ -53,11 +53,11 @@ model User {
 }
 
 model Project {
-  id        String          @id @default(uuid())
-  name      String?         @unique
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime        @default(now()) @updatedAt @map("updated_at")
-  invites   ProjectInvite[]
+  id        String              @id @default(uuid())
+  name      String?             @unique
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @default(now()) @updatedAt @map("updated_at")
+  invites   ProjectUserInvite[]
   users     ProjectUser[]
 
   @@map("projects")
@@ -75,17 +75,17 @@ model ProjectUser {
   @@map("project_users")
 }
 
-model ProjectInvite {
-  id        String      @id @default(uuid())
-  createdAt DateTime    @default(now()) @map("created_at")
-  projectId String      @map("project_id")
-  email     String
-  role      ProjectRole
-  sentBy    String      @map("sent_by")
-  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user      User        @relation(fields: [sentBy], references: [id])
+model ProjectUserInvite {
+  id           String      @id @default(uuid())
+  createdAt    DateTime    @default(now()) @map("created_at")
+  projectId    String      @map("project_id")
+  email        String
+  role         ProjectRole
+  sentByUserId String?     @map("sent_by_user_id")
+  project      Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user         User?       @relation(fields: [sentByUserId], references: [id], onDelete: SetNull)
 
-  @@map("project_invites")
+  @@map("project_user_invites")
 }
 
 model VerificationToken {

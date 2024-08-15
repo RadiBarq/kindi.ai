@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ProjectMembers from "./component/ProjectMembers";
 import ErrorMessage from "@/components/misc/Error";
-import { getProjectMembers, deleteProjectMember } from "./actions";
+import { getProjectMembers } from "./actions";
 import { hasAccess } from "@/lib/user/projectAccess";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -31,7 +31,7 @@ export default async function Settings({ params }: { params: { id: string } }) {
           hasDeleteAccess={hasDeleteAccess}
           currentUserId={userId}
           isOwner={isOwner(projectId, session)}
-          deleteProjectMemberAction={deleteProjectMember}
+          projectId={projectId}
         />
       </div>
     );
