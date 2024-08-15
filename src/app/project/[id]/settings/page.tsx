@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ProjectMembers from "./component/ProjectMembers";
 import ErrorMessage from "@/components/misc/Error";
-import { getProjectMembers } from "./actions";
+import { getProjectMembers, getProjectInvites } from "./actions";
 import { hasAccess } from "@/lib/user/projectAccess";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -16,8 +16,9 @@ export default async function Settings({ params }: { params: { id: string } }) {
     const projectId = params.id;
     const session = await getServerSession(authOptions);
     const members = await getProjectMembers(projectId);
+    const invites = await getProjectInvites(projectId);
     const userId = session?.user.id ?? "";
-    const hasDeleteAccess = hasAccess({
+    const hasDeleteMemberAccess = hasAccess({
       projectId: projectId,
       scope: "members:delete",
       session: session,
@@ -28,10 +29,11 @@ export default async function Settings({ params }: { params: { id: string } }) {
         <div className="text-4xl font-bold">Settings</div>
         <ProjectMembers
           members={members}
-          hasDeleteAccess={hasDeleteAccess}
+          hasDeleteAccess={hasDeleteMemberAccess}
           currentUserId={userId}
           isOwner={isOwner(projectId, session)}
           projectId={projectId}
+          invites={invites}
         />
       </div>
     );

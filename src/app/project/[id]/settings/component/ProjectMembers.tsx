@@ -11,7 +11,10 @@ import {
 import ProjectInvites from "./ProjectInvites";
 import { Plus, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProjectMembers } from "../types/projects";
+import {
+  ProjectMembers,
+  ProjectUserInvitesWithSentByUser,
+} from "../types/projects";
 import { deleteProjectMember } from "../actions";
 import { Dialog } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -19,6 +22,7 @@ import AddNewMemberDialog from "./AddNewMemberDialog";
 
 interface ProjectMembersProps {
   members: ProjectMembers;
+  invites: ProjectUserInvitesWithSentByUser;
   hasDeleteAccess: boolean;
   currentUserId: string;
   isOwner: boolean;
@@ -31,6 +35,7 @@ export default function ProjectMembersProps({
   currentUserId,
   isOwner,
   projectId,
+  invites,
 }: ProjectMembersProps) {
   const deleteMemberHandler = async (memeber: string) => {
     try {
@@ -83,7 +88,9 @@ export default function ProjectMembersProps({
                   <TableCell className="text-gray-900">
                     {member.user.email}
                   </TableCell>
-                  <TableCell className="text-gray-900">{member.role}</TableCell>
+                  <TableCell className="text-gray-900">
+                    {member.role.charAt(0) + member.role.slice(1).toLowerCase()}
+                  </TableCell>
                   <TableCell className="text-gray-900">
                     {hasDeleteAccess &&
                       isOwner &&
@@ -103,7 +110,7 @@ export default function ProjectMembersProps({
         <Button onClick={addNewMemberHandler} className="w-44 cursor-pointer">
           <Plus className="mr-2" /> Add new member
         </Button>
-        <ProjectInvites />
+        <ProjectInvites invites={invites} hasDeleteAccess={hasDeleteAccess} />
       </div>
     </Dialog>
   );

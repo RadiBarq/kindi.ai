@@ -7,8 +7,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ProjectUserInvitesWithSentByUser } from "../types/projects";
+import { Trash } from "lucide-react";
 
-export default function ProjectInvites() {
+interface ProjectInvitesProps {
+  invites: ProjectUserInvitesWithSentByUser;
+  hasDeleteAccess: boolean;
+}
+
+export default function ProjectInvites({
+  invites,
+  hasDeleteAccess,
+}: ProjectInvitesProps) {
+  const deleteInviteHandler = async (inviteId: string) => {
+    try {
+      //await deleteProjectMember(memeber);
+    } catch (error: any) {
+      console.error(error.message);
+    }
+  };
+
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="text-lg font-bold">Project Invites</div>
@@ -28,27 +46,28 @@ export default function ProjectInvites() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell className="font-medium text-gray-900">
-                radibaraq@gmail.com
-              </TableCell>
-              <TableCell className="text-gray-900">MEMBER</TableCell>
-              <TableCell className="text-gray-900">Radi Barq</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium text-gray-900">
-                radibaraq@gmail.com
-              </TableCell>
-              <TableCell className="text-gray-900">MEMBER</TableCell>
-              <TableCell className="text-gray-900">Radi Barq</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium text-gray-900">
-                radibaraq@gmail.com
-              </TableCell>
-              <TableCell className="text-gray-900">MEMBER</TableCell>
-              <TableCell className="text-gray-900">Radi Barq</TableCell>
-            </TableRow>
+            {invites.map((invite) => (
+              <TableRow key={invite.id}>
+                <TableCell className="font-medium text-gray-900">
+                  {invite.email}
+                </TableCell>
+                <TableCell className="text-gray-900">
+                  {invite.role.charAt(0) + invite.role.slice(1).toLowerCase()}
+                </TableCell>
+                <TableCell className="text-gray-900">
+                  {invite.sentByUser?.name}
+                </TableCell>
+
+                <TableCell className="text-gray-900">
+                  {hasDeleteAccess && (
+                    <Trash
+                      className="h-5 w-5 cursor-pointer"
+                      onClick={() => deleteInviteHandler(invite.id)}
+                    />
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>

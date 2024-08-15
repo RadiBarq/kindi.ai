@@ -83,7 +83,7 @@ model ProjectUserInvite {
   role         ProjectRole
   sentByUserId String?     @map("sent_by_user_id")
   project      Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user         User?       @relation(fields: [sentByUserId], references: [id], onDelete: SetNull)
+  sentByUser   User?       @relation(fields: [sentByUserId], references: [id], onDelete: SetNull)
 
   @@map("project_user_invites")
 }
