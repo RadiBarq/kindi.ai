@@ -11,12 +11,23 @@ import { ProjectRole } from "@prisma/client";
 import { hasAccess } from "@/lib/user/projectAccess";
 import { ProjectUserInvite } from "@prisma/client";
 
+// Project members
 export async function getProjectMembers(
   projectId: string,
 ): Promise<ProjectMembers> {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  if (
+    !hasAccess({
+      session: session,
+      projectId,
+      scope: "members:read",
+    })
+  ) {
+    throw Error("Operation is not allowed; you don't have authorization");
   }
 
   const userId = session.user.id;
@@ -45,10 +56,20 @@ export async function getProjectMembers(
   return users;
 }
 
-export async function deleteProjectMember(memberId: string) {
+export async function deleteProjectMember(memberId: string, projectId: string) {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  if (
+    !hasAccess({
+      session: session,
+      projectId: projectId,
+      scope: "members:delete",
+    })
+  ) {
+    throw Error("Operation is not allowed; you don't have authorization");
   }
 
   await prismaDB.projectUser.delete({
@@ -57,10 +78,11 @@ export async function deleteProjectMember(memberId: string) {
     },
   });
 
-  revalidatePath("/project/settings");
+  revalidatePath(`/project/${projectId}/settings`);
 }
 
-export async function createNewProjectMemberInvite(
+// Project invites
+export async function createProjectInvite(
   projectId: string,
   email: string,
   role: ProjectRole,
@@ -79,7 +101,7 @@ export async function createNewProjectMemberInvite(
       scope: "members:create",
     })
   ) {
-    throw Error("Operation is not allowed; you are not authorization");
+    throw Error("Operation is not allowed; you don't have authorization");
   }
 
   const memberInvite: ProjectUserInvite =
@@ -94,7 +116,7 @@ export async function createNewProjectMemberInvite(
 
   // TODO Sent invitation email to the user here.
 
-  revalidatePath("/project/settings");
+  revalidatePath(`/project/${projectId}/settings`);
   return memberInvite;
 }
 
@@ -126,4 +148,29 @@ export async function getProjectInvites(
     });
 
   return invites;
+}
+
+export async function deleteProjectInvite(id: string, projectId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  if (
+    !hasAccess({
+      session: session,
+      projectId: projectId,
+      scope: "members:delete",
+    })
+  ) {
+    throw Error("Operation is not allowed; you don't have authorization");
+  }
+
+  await prismaDB.projectUserInvite.delete({
+    where: {
+      id,
+    },
+  });
+
+  revalidatePath(`/project/${projectId}/settings`);
 }

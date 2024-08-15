@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createNewProjectMemberInvite } from "../actions";
+import { createProjectInvite } from "../actions";
 
 interface AddNewMemberDialogProps {
   onNewMemberAdded: () => void;
@@ -95,7 +95,7 @@ function InputForm({
     setIsLoading(true);
 
     try {
-      await createNewProjectMemberInvite(projectId, email, role, currentUserId);
+      await createProjectInvite(projectId, email, role, currentUserId);
     } catch (error: any) {
       setError(error.message ?? "An unexpected error occurred.");
       console.error(error.message);

@@ -9,19 +9,22 @@ import {
 } from "@/components/ui/table";
 import { ProjectUserInvitesWithSentByUser } from "../types/projects";
 import { Trash } from "lucide-react";
+import { deleteProjectInvite } from "../actions";
 
 interface ProjectInvitesProps {
   invites: ProjectUserInvitesWithSentByUser;
   hasDeleteAccess: boolean;
+  projectId: string;
 }
 
 export default function ProjectInvites({
   invites,
   hasDeleteAccess,
+  projectId,
 }: ProjectInvitesProps) {
   const deleteInviteHandler = async (inviteId: string) => {
     try {
-      //await deleteProjectMember(memeber);
+      await deleteProjectInvite(inviteId, projectId);
     } catch (error: any) {
       console.error(error.message);
     }

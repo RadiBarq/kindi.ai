@@ -39,7 +39,7 @@ export default function ProjectMembersProps({
 }: ProjectMembersProps) {
   const deleteMemberHandler = async (memeber: string) => {
     try {
-      await deleteProjectMember(memeber);
+      await deleteProjectMember(memeber, projectId);
     } catch (error: any) {
       console.error(error.message);
     }
@@ -110,7 +110,11 @@ export default function ProjectMembersProps({
         <Button onClick={addNewMemberHandler} className="w-44 cursor-pointer">
           <Plus className="mr-2" /> Add new member
         </Button>
-        <ProjectInvites invites={invites} hasDeleteAccess={hasDeleteAccess} />
+        <ProjectInvites
+          projectId={projectId}
+          invites={invites}
+          hasDeleteAccess={hasDeleteAccess}
+        />
       </div>
     </Dialog>
   );
