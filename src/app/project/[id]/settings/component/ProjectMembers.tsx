@@ -21,8 +21,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ProjectUserInviteWithSentByUser } from "../types/projects";
 import AddNewMemberDialog from "./AddNewMemberDialog";
-import { ProjectRole, ProjectUser } from "@prisma/client";
-import { boolean } from "zod";
+import { ProjectRole } from "@prisma/client";
 
 interface ProjectMembersProps {
   members: ProjectMembers;

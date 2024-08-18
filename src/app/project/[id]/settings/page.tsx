@@ -6,6 +6,7 @@ import { hasAccess } from "@/lib/user/projectAccess";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isOwner } from "@/lib/user/projectRoles";
+import ProjectName from "./component/ProjectName";
 
 export const metadata: Metadata = {
   title: "Project settings | Kindi AI",
@@ -15,6 +16,9 @@ export default async function Settings({ params }: { params: { id: string } }) {
   try {
     const projectId = params.id;
     const session = await getServerSession(authOptions);
+    const project = session?.user.projects.find(
+      (project) => project.id === projectId,
+    );
     const hasReadMembersAccess = hasAccess({
       projectId: projectId,
       scope: "members:read",
@@ -29,6 +33,12 @@ export default async function Settings({ params }: { params: { id: string } }) {
     const hasCreateMembersAccess = hasAccess({
       projectId: projectId,
       scope: "members:create",
+      session: session,
+    });
+
+    const hasUpdateProjectAccess = hasAccess({
+      projectId: projectId,
+      scope: "project:update",
       session: session,
     });
 
@@ -56,6 +66,10 @@ export default async function Settings({ params }: { params: { id: string } }) {
             projectId={projectId}
             invites={invites}
           />
+        )}
+        {/* Project name */}
+        {project && hasUpdateProjectAccess && (
+          <ProjectName projectName={project.name ?? ""} />
         )}
       </div>
     );

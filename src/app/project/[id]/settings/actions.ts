@@ -8,7 +8,7 @@ import {
   ProjectUserInviteWithSentByUser,
 } from "./types/projects";
 import { revalidatePath } from "next/cache";
-import { ProjectRole, ProjectUser } from "@prisma/client";
+import { Project, ProjectRole, ProjectUser } from "@prisma/client";
 import { hasAccess } from "@/lib/user/projectAccess";
 import { isOwner } from "@/lib/user/projectRoles";
 
@@ -206,6 +206,36 @@ export async function deleteProjectInvite(id: string, projectId: string) {
   });
 
   revalidatePath(`/project/${projectId}/settings`);
+}
+
+export async function updateProjectName(
+  projectName: string,
+  projectId: string,
+): Promise<Project> {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  const hasUpdateProjectAccess = hasAccess({
+    projectId: projectId,
+    scope: "project:update",
+    session: session,
+  });
+
+  if (!hasUpdateProjectAccess) {
+    throw Error("Operation is not allowed; you don't have authorization");
+  }
+
+  // Update the project name in the database
+  return (await prismaDB.project.update({
+    where: {
+      id: projectId,
+    },
+    data: {
+      name: projectName,
+    },
+  })) as Project;
 }
 
 function hasDeleteMemberAccess(
