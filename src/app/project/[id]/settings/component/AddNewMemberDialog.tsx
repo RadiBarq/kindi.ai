@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { z } from "zod";
 import { ProjectRole } from "@prisma/client";
+import { ProjectUserInviteWithSentByUser } from "../types/projects";
 import {
   Select,
   SelectContent,
@@ -23,15 +24,17 @@ import {
 import { createProjectInvite } from "../actions";
 
 interface AddNewMemberDialogProps {
-  onNewMemberAdded: () => void;
+  onNewMemberAdded: (newInvite: ProjectUserInviteWithSentByUser) => void;
   projectId: string;
   currentUserId: string;
+  isOwner: boolean;
 }
 
 export default function AddNewMemberDialog({
   onNewMemberAdded,
   projectId,
   currentUserId,
+  isOwner,
 }: AddNewMemberDialogProps) {
   return (
     <>
@@ -44,6 +47,7 @@ export default function AddNewMemberDialog({
           projectId={projectId}
           currentUserId={currentUserId}
           onNewMemberAdded={onNewMemberAdded}
+          isOwner={isOwner}
         />
       </DialogContent>
     </>
@@ -53,7 +57,8 @@ export default function AddNewMemberDialog({
 interface InputFormProps {
   projectId: string;
   currentUserId: string;
-  onNewMemberAdded: () => void;
+  onNewMemberAdded: (invite: ProjectUserInviteWithSentByUser) => void;
+  isOwner: boolean;
   className?: string;
 }
 
@@ -62,11 +67,16 @@ function InputForm({
   className,
   projectId,
   currentUserId,
+  isOwner,
 }: InputFormProps) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<String | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [role, setRole] = useState<ProjectRole>(ProjectRole.MEMBER);
+  const roles = isOwner
+    ? Object.values(ProjectRole)
+    : Object.values(ProjectRole).filter((role) => role !== ProjectRole.OWNER);
+
   const emailSchema = z.object({
     email: z
       .string()
@@ -95,17 +105,20 @@ function InputForm({
     setIsLoading(true);
 
     try {
-      await createProjectInvite(projectId, email, role, currentUserId);
+      const newInvite = await createProjectInvite(
+        projectId,
+        email,
+        role,
+        currentUserId,
+      );
+      onNewMemberAdded(newInvite);
+      setIsLoading(false);
+      setEmail("");
     } catch (error: any) {
       setError(error.message ?? "An unexpected error occurred.");
       console.error(error.message);
       setIsLoading(false);
-      return;
     }
-
-    setIsLoading(false);
-    setEmail("");
-    onNewMemberAdded();
   };
 
   return (
@@ -133,7 +146,7 @@ function InputForm({
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {Object.values(ProjectRole).map((value) => (
+              {roles.map((value) => (
                 <SelectItem key={value} value={value}>
                   <div className="w-full text-start">
                     {value.charAt(0) + value.slice(1).toLowerCase()}

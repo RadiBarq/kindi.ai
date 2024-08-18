@@ -15,26 +15,48 @@ export default async function Settings({ params }: { params: { id: string } }) {
   try {
     const projectId = params.id;
     const session = await getServerSession(authOptions);
-    const members = await getProjectMembers(projectId);
-    const invites = await getProjectInvites(projectId);
-    const userId = session?.user.id ?? "";
-    const hasDeleteMemberAccess = hasAccess({
+    const hasReadMembersAccess = hasAccess({
+      projectId: projectId,
+      scope: "members:read",
+      session: session,
+    });
+    const hasDeleteMembersAccess = hasAccess({
       projectId: projectId,
       scope: "members:delete",
       session: session,
     });
+
+    const hasCreateMembersAccess = hasAccess({
+      projectId: projectId,
+      scope: "members:create",
+      session: session,
+    });
+
+    const members = hasReadMembersAccess
+      ? await getProjectMembers(projectId)
+      : null;
+    const invites = hasReadMembersAccess
+      ? await getProjectInvites(projectId)
+      : null;
+    const userId = session?.user.id ?? "";
+
     return (
       <div className="flex max-w-7xl flex-col items-start justify-start gap-10 p-10">
         {/* Header */}
         <div className="text-4xl font-bold">Settings</div>
-        <ProjectMembers
-          members={members}
-          hasDeleteAccess={hasDeleteMemberAccess}
-          currentUserId={userId}
-          isOwner={isOwner(projectId, session)}
-          projectId={projectId}
-          invites={invites}
-        />
+
+        {/* Project members */}
+        {hasReadMembersAccess && members && invites && (
+          <ProjectMembers
+            members={members}
+            hasDeleteMembersAccess={hasDeleteMembersAccess}
+            hasCreateMembersAccess={hasCreateMembersAccess}
+            currentUserId={userId}
+            isOwner={isOwner(projectId, session)}
+            projectId={projectId}
+            invites={invites}
+          />
+        )}
       </div>
     );
   } catch (error: any) {

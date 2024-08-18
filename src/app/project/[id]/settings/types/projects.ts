@@ -1,9 +1,14 @@
 import { ProjectUser, ProjectUserInvite, User } from "@prisma/client";
 
-export type ProjectMembers = (ProjectUser & {
-  user: User;
-})[];
+export type ProjectMembers = ProjectMember[];
 
-export type ProjectUserInvitesWithSentByUser = (ProjectUserInvite & {
+export type ProjectMember = ProjectUser & {
+  user: User;
+};
+
+export type ProjectUserInvitesWithSentByUser =
+  ProjectUserInviteWithSentByUser[];
+
+export type ProjectUserInviteWithSentByUser = ProjectUserInvite & {
   sentByUser: User | null;
-})[];
+};

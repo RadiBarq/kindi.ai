@@ -10,25 +10,35 @@ import {
 import { ProjectUserInvitesWithSentByUser } from "../types/projects";
 import { Trash } from "lucide-react";
 import { deleteProjectInvite } from "../actions";
+import { useState } from "react";
+import { useEffect } from "react";
 
 interface ProjectInvitesProps {
   invites: ProjectUserInvitesWithSentByUser;
-  hasDeleteAccess: boolean;
+  hasDeleteMembersAccess: boolean;
   projectId: string;
 }
 
 export default function ProjectInvites({
   invites,
-  hasDeleteAccess,
+  hasDeleteMembersAccess,
   projectId,
 }: ProjectInvitesProps) {
+  const [projectInvites, setProjectInvites] = useState(invites);
   const deleteInviteHandler = async (inviteId: string) => {
     try {
       await deleteProjectInvite(inviteId, projectId);
+      setProjectInvites((currentInvites) =>
+        currentInvites.filter((invite) => invite.id !== inviteId),
+      );
     } catch (error: any) {
       console.error(error.message);
     }
   };
+
+  useEffect(() => {
+    setProjectInvites(invites);
+  }, [invites]);
 
   return (
     <div className="flex w-full flex-col gap-4">
@@ -49,7 +59,7 @@ export default function ProjectInvites({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invites.map((invite) => (
+            {projectInvites.map((invite) => (
               <TableRow key={invite.id}>
                 <TableCell className="font-medium text-gray-900">
                   {invite.email}
@@ -62,7 +72,7 @@ export default function ProjectInvites({
                 </TableCell>
 
                 <TableCell className="text-gray-900">
-                  {hasDeleteAccess && (
+                  {hasDeleteMembersAccess && (
                     <Trash
                       className="h-5 w-5 cursor-pointer"
                       onClick={() => deleteInviteHandler(invite.id)}

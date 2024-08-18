@@ -1,15 +1,16 @@
 "use server";
 import prismaDB from "@/lib/db/prisma";
 import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
+import { getServerSession, Session } from "next-auth";
 import {
   ProjectMembers,
   ProjectUserInvitesWithSentByUser,
+  ProjectUserInviteWithSentByUser,
 } from "./types/projects";
 import { revalidatePath } from "next/cache";
-import { ProjectRole } from "@prisma/client";
+import { ProjectRole, ProjectUser } from "@prisma/client";
 import { hasAccess } from "@/lib/user/projectAccess";
-import { ProjectUserInvite } from "@prisma/client";
+import { isOwner } from "@/lib/user/projectRoles";
 
 // Project members
 export async function getProjectMembers(
@@ -62,13 +63,17 @@ export async function deleteProjectMember(memberId: string, projectId: string) {
     throw Error("Operation is not allowed; you need to authenticate first.");
   }
 
-  if (
-    !hasAccess({
-      session: session,
-      projectId: projectId,
-      scope: "members:delete",
-    })
-  ) {
+  const member: ProjectUser | null = await prismaDB.projectUser.findFirst({
+    where: {
+      id: memberId,
+    },
+  });
+
+  if (!member) {
+    throw Error("Cannot find member with the following id.");
+  }
+
+  if (!hasDeleteMemberAccess(member, session, projectId)) {
     throw Error("Operation is not allowed; you don't have authorization");
   }
 
@@ -87,7 +92,7 @@ export async function createProjectInvite(
   email: string,
   role: ProjectRole,
   sentByUserId: string,
-): Promise<ProjectUserInvite> {
+): Promise<ProjectUserInviteWithSentByUser> {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -104,7 +109,33 @@ export async function createProjectInvite(
     throw Error("Operation is not allowed; you don't have authorization");
   }
 
-  const memberInvite: ProjectUserInvite =
+  const isUserAlreadyAMember = await prismaDB.projectUser.findFirst({
+    where: {
+      user: { email: email },
+      projectId,
+    },
+  });
+
+  if (isUserAlreadyAMember) {
+    throw Error(
+      "User with the same email is already a member of this project.",
+    );
+  }
+
+  const isUserAlreadyInvited = await prismaDB.projectUserInvite.findFirst({
+    where: {
+      email,
+      projectId,
+    },
+  });
+
+  if (isUserAlreadyInvited) {
+    throw Error(
+      "User with the same email is already invited to this project. If you want to resend the invitation delete the current invitation and resend it again.",
+    );
+  }
+
+  const memberInvite: ProjectUserInviteWithSentByUser =
     await prismaDB.projectUserInvite.create({
       data: {
         projectId,
@@ -112,10 +143,12 @@ export async function createProjectInvite(
         role,
         sentByUserId,
       },
+      include: {
+        sentByUser: true,
+      },
     });
 
   // TODO Sent invitation email to the user here.
-
   revalidatePath(`/project/${projectId}/settings`);
   return memberInvite;
 }
@@ -173,4 +206,33 @@ export async function deleteProjectInvite(id: string, projectId: string) {
   });
 
   revalidatePath(`/project/${projectId}/settings`);
+}
+
+function hasDeleteMemberAccess(
+  member: ProjectUser,
+  session: Session | null,
+  projectId: string,
+): boolean {
+  if (
+    !hasAccess({
+      session: session,
+      projectId: projectId,
+      scope: "members:delete",
+    })
+  ) {
+    return false;
+  }
+
+  const isCurrentUserOwner = isOwner(projectId, session);
+  const currentUserId = session?.user.id;
+
+  if (!isCurrentUserOwner) {
+    return (
+      (member.role === ProjectRole.MEMBER ||
+        member.role === ProjectRole.VIEWER) &&
+      member.userId !== currentUserId
+    );
+  }
+
+  return member.userId !== currentUserId;
 }
