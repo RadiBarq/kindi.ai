@@ -6,7 +6,7 @@ import { hasAccess } from "@/lib/user/projectAccess";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isOwner } from "@/lib/user/projectRoles";
-import ProjectName from "./component/ProjectName";
+import EditProjectName from "./component/EditProjectName";
 
 export const metadata: Metadata = {
   title: "Project settings | Kindi AI",
@@ -69,7 +69,10 @@ export default async function Settings({ params }: { params: { id: string } }) {
         )}
         {/* Project name */}
         {project && hasUpdateProjectAccess && (
-          <ProjectName projectName={project.name ?? ""} />
+          <EditProjectName
+            projectId={projectId}
+            projectName={project.name ?? ""}
+          />
         )}
       </div>
     );

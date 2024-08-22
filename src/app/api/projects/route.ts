@@ -30,22 +30,8 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
     const { projectName } = validation.data;
-
-    // Check if a project with the same name already exists
-    const existingProject = await prismaDB.project.findUnique({
-      where: { name: projectName, users: { some: { userId } } },
-    });
-
-    if (existingProject) {
-      return NextResponse.json(
-        {
-          message:
-            "A project with this name already exists. Please choose another name.",
-        },
-        { status: 400 },
-      );
-    }
 
     const result = await prismaDB.$transaction(async (tx) => {
       const newProject = await tx.project.create({

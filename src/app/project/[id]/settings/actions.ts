@@ -213,6 +213,7 @@ export async function updateProjectName(
   projectId: string,
 ): Promise<Project> {
   const session = await getServerSession(authOptions);
+  const userId = session?.user.id;
   if (!session) {
     throw Error("Operation is not allowed; you need to authenticate first.");
   }
@@ -225,6 +226,18 @@ export async function updateProjectName(
 
   if (!hasUpdateProjectAccess) {
     throw Error("Operation is not allowed; you don't have authorization");
+  }
+
+  // Check if the user belongs to the project
+  const project = await prismaDB.projectUser.findFirst({
+    where: {
+      projectId: projectId,
+      userId: userId,
+    },
+  });
+
+  if (!project) {
+    throw Error("You don't belong to the project that you are trying to edit.");
   }
 
   // Update the project name in the database
