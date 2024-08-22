@@ -84,11 +84,11 @@ export default function ProjectMembersProps({
   const [membersInvite, setMembersInvite] = useState(invites);
 
   return (
-    <Dialog
-      open={addNewMemberDialogOpen}
-      onOpenChange={setAddNewMemberDialogOpen}
-    >
-      <div className="flex w-full flex-col gap-4">
+    <div className="flex w-full flex-col items-start gap-4">
+      <Dialog
+        open={addNewMemberDialogOpen}
+        onOpenChange={setAddNewMemberDialogOpen}
+      >
         <div className="text-2xl font-bold">Project Members</div>
         {addNewMemberDialogOpen && (
           <AddNewMemberDialog
@@ -98,14 +98,14 @@ export default function ProjectMembersProps({
             isOwner={isOwner}
           />
         )}
-        <div className="border-gray-1000 w-full rounded-lg border bg-white bg-opacity-60 shadow-md shadow-gray-200">
+        <div className="border-gray-1000 flex w-full rounded-lg border bg-white bg-opacity-60 shadow-md shadow-gray-200">
           <Table>
             <TableHeader>
-              <TableRow className="">
-                <TableHead className="w-[200px] font-semibold text-gray-900">
+              <TableRow>
+                <TableHead className="font-semibold text-gray-900 ">
                   Name
                 </TableHead>
-                <TableHead className="w-[400px] font-semibold  text-gray-900">
+                <TableHead className="font-semibold text-gray-900 ">
                   Email
                 </TableHead>
                 <TableHead className="font-semibold text-gray-900">
@@ -153,7 +153,7 @@ export default function ProjectMembersProps({
           invites={membersInvite}
           hasDeleteMembersAccess={hasDeleteMembersAccess}
         />
-      </div>
-    </Dialog>
+      </Dialog>
+    </div>
   );
 }

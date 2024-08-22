@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isOwner } from "@/lib/user/projectRoles";
 import EditProjectName from "./component/EditProjectName";
+import DangerZone from "./component/DangerZone";
 
 export const metadata: Metadata = {
   title: "Project settings | Kindi AI",
@@ -51,29 +52,31 @@ export default async function Settings({ params }: { params: { id: string } }) {
     const userId = session?.user.id ?? "";
 
     return (
-      <div className="flex max-w-7xl flex-col items-start justify-start gap-10 p-10">
+      <div className="flex w-full max-w-7xl flex-col items-start justify-start gap-10 p-10">
         {/* Header */}
         <div className="text-4xl font-bold">Settings</div>
-
-        {/* Project members */}
-        {hasReadMembersAccess && members && invites && (
-          <ProjectMembers
-            members={members}
-            hasDeleteMembersAccess={hasDeleteMembersAccess}
-            hasCreateMembersAccess={hasCreateMembersAccess}
-            currentUserId={userId}
-            isOwner={isOwner(projectId, session)}
-            projectId={projectId}
-            invites={invites}
-          />
-        )}
-        {/* Project name */}
-        {project && hasUpdateProjectAccess && (
-          <EditProjectName
-            projectId={projectId}
-            projectName={project.name ?? ""}
-          />
-        )}
+        <div className="flex w-full flex-col justify-start gap-10 rounded-md border border-gray-400/70 p-10">
+          {/* Project members */}
+          {hasReadMembersAccess && members && invites && (
+            <ProjectMembers
+              members={members}
+              hasDeleteMembersAccess={hasDeleteMembersAccess}
+              hasCreateMembersAccess={hasCreateMembersAccess}
+              currentUserId={userId}
+              isOwner={isOwner(projectId, session)}
+              projectId={projectId}
+              invites={invites}
+            />
+          )}
+          {/* Project name */}
+          {project && hasUpdateProjectAccess && (
+            <EditProjectName
+              projectId={projectId}
+              projectName={project.name ?? ""}
+            />
+          )}
+          <DangerZone />
+        </div>
       </div>
     );
   } catch (error: any) {

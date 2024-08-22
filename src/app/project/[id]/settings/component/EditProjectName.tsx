@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -36,7 +35,7 @@ export default function EditProjectName({
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="text-2xl font-bold">Project Name</div>
-      <div className="text-base">
+      <div className="text-sm">
         Your project is currently named
         <strong> &quot;{projectName}&quot;</strong>
       </div>
