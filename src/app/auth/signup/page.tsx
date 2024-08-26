@@ -50,7 +50,7 @@ export default async function SignUp() {
               Already have an account?
             </h2>
             <p className="mt-4 rounded-full border border-black/[0.2] px-2 py-0.5 text-sm font-light text-black dark:border-white/[0.2] dark:text-white">
-              <Link href="/auth/signin">Sign up here</Link>
+              <Link href="/auth/signin">Sign in here</Link>
             </p>
           </div>
 
