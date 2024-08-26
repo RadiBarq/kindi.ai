@@ -75,7 +75,9 @@ export default async function Settings({ params }: { params: { id: string } }) {
               projectName={project.name ?? ""}
             />
           )}
-          <DangerZone projectId={projectId} />
+          {project && project.name && (
+            <DangerZone projectId={projectId} projectName={project.name} />
+          )}
         </div>
       </div>
     );

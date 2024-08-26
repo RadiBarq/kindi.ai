@@ -284,11 +284,14 @@ export async function deleteProject(projectId: string) {
     );
   }
 
-  return await prismaDB.project.delete({
+  const result = await prismaDB.project.delete({
     where: {
       id: projectId,
     },
   });
+
+  revalidatePath(`/project/${projectId}/settings`);
+  return result;
 }
 
 function hasDeleteMemberAccess(

@@ -42,10 +42,7 @@ function InputForm({ onCreateProject, className }: InputFormProps) {
   const [error, setError] = useState<String | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const projectSchema = z.object({
-    projectName: z
-      .string()
-      .min(1, "Project name is required")
-      .max(100, "Project name must be at most 100 characters"),
+    projectName: z.string().min(1, "Project name is required"),
   });
 
   const createProject = async (name: string) => {
