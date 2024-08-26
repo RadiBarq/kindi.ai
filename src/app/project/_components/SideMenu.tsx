@@ -246,7 +246,7 @@ function ProjectSelectBox({
   onProjectChange,
 }: ProjectSelectBoxProps) {
   const onValueChange = (value: string) => {
-    const selectedProject = projects.find((project) => project.name === value);
+    const selectedProject = projects.find((project) => project.id === value);
     if (!selectedProject) {
       return;
     }
@@ -255,14 +255,14 @@ function ProjectSelectBox({
 
   const initialProject = projects.find((project) => project.id === projectId);
   return (
-    <Select onValueChange={onValueChange} value={initialProject?.name ?? ""}>
+    <Select onValueChange={onValueChange} value={initialProject?.id ?? ""}>
       <SelectTrigger>
         <SelectValue placeholder="Project" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup className="items-start">
           {projects.map((project) => (
-            <SelectItem key={project.id} value={project.name ?? ""}>
+            <SelectItem key={project.id} value={project.id ?? ""}>
               <div className="w-full text-start">{project.name}</div>
             </SelectItem>
           ))}

@@ -275,7 +275,7 @@ function ProjectSelectBox({
   onProjectChange,
 }: ProjectSelectBoxProps) {
   const onValueChange = (value: string) => {
-    const selectedProject = projects.find((project) => project.name === value);
+    const selectedProject = projects.find((project) => project.id === value);
     if (!selectedProject) {
       return;
     }
@@ -284,7 +284,7 @@ function ProjectSelectBox({
 
   const initialProject = projects.find((project) => project.id === projectId);
   return (
-    <Select onValueChange={onValueChange} value={initialProject?.name ?? ""}>
+    <Select onValueChange={onValueChange} value={initialProject?.id ?? ""}>
       <SelectTrigger className="text-lg">
         <SelectValue className="text-lg" placeholder="Project" />
       </SelectTrigger>
@@ -294,7 +294,7 @@ function ProjectSelectBox({
             <SelectItem
               key={project.id}
               className="text text-lg"
-              value={project.name ?? ""}
+              value={project.id ?? ""}
             >
               {project.name}
             </SelectItem>
