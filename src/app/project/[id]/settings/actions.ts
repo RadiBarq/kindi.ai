@@ -251,6 +251,46 @@ export async function updateProjectName(
   })) as Project;
 }
 
+export async function deleteProject(projectId: string) {
+  const session = await getServerSession(authOptions);
+  const userId = session?.user.id;
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  if (
+    !hasAccess({
+      session: session,
+      projectId: projectId,
+      scope: "project:delete",
+    })
+  ) {
+    throw Error(
+      "Operation is not allowed; you don't have authorization to delete the project.",
+    );
+  }
+
+  // Check if the user belongs to the project
+  const project = await prismaDB.projectUser.findFirst({
+    where: {
+      projectId: projectId,
+      userId: userId,
+    },
+  });
+
+  if (!project) {
+    throw Error(
+      "You don't belong to the project that you are trying to delete.",
+    );
+  }
+
+  return await prismaDB.project.delete({
+    where: {
+      id: projectId,
+    },
+  });
+}
+
 function hasDeleteMemberAccess(
   member: ProjectUser,
   session: Session | null,

@@ -75,7 +75,7 @@ export default async function Settings({ params }: { params: { id: string } }) {
               projectName={project.name ?? ""}
             />
           )}
-          <DangerZone />
+          <DangerZone projectId={projectId} />
         </div>
       </div>
     );

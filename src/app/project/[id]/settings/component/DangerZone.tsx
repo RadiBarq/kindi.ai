@@ -2,9 +2,28 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { deleteProject } from "../actions";
+import { useRouter } from "next/navigation";
 
-export default function DangerZone() {
+interface DangerZoneProps {
+  projectId: string;
+}
+
+export default function DangerZone({ projectId }: DangerZoneProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const onClickDeleteProject = async () => {
+    setIsLoading(true);
+    try {
+      await deleteProject(projectId);
+      setIsLoading(false);
+      router.replace("/project/getStarted");
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="text-2xl font-bold">Danger Zone</div>
@@ -21,6 +40,7 @@ export default function DangerZone() {
           className="w-30"
           disabled={isLoading}
           type="submit"
+          onClick={onClickDeleteProject}
         >
           {isLoading && <span className=" loading loading-spinner mr-1"></span>}
           Delete project
