@@ -5,7 +5,7 @@ import { NextAuthOptions } from "next-auth";
 import prisma from "@/lib/db/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { Adapter } from "next-auth/adapters";
-import { compare } from "bcrypt";
+import { compare } from "bcryptjs";
 import prismaDB from "@/lib/db/prisma";
 import { encode, decode } from "next-auth/jwt";
 import { z } from "zod";

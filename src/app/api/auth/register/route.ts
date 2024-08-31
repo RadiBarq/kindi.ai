@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { hash } from "bcrypt";
+import { hash } from "bcryptjs";
 import prismaDB from "@/lib/db/prisma";
 
 export async function POST(request: Request) {
