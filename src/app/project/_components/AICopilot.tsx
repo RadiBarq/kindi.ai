@@ -1,3 +1,5 @@
+"use client";
+
 import { Triangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@/components/ui/evervault-card";
@@ -13,15 +15,24 @@ export const maxDuration = 30;
 
 interface AICopilotProps {
   conversationId: string | null;
+  projectId: string;
+  hasSendNewMessageAccess: boolean;
 }
 
-export default function AICopilot({ conversationId }: AICopilotProps) {
+export default function AICopilot({
+  conversationId,
+  projectId,
+  hasSendNewMessageAccess,
+}: AICopilotProps) {
   const [currentConversationId, setCurrentConversationId] =
     useState(conversationId);
   const [messages, setMessages] = useState<CoreMessage[]>([]);
   const [input, setInput] = useState("");
-  const initialMessage =
-    "Hello! How can I assist you today? I'm Kindi, your AI copilot";
+  const initialMessage = "Hello! I am Kindi How can I assist you today?";
+
+  const inputPlaceholder = hasSendNewMessageAccess
+    ? "Chat with Kindi"
+    : "You don't have access to talk with Kindi";
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,6 +46,7 @@ export default function AICopilot({ conversationId }: AICopilotProps) {
     const { message, conversationId } = await continueConversation(
       newMessages,
       currentConversationId,
+      projectId,
     );
 
     setCurrentConversationId(conversationId);
@@ -60,7 +72,7 @@ export default function AICopilot({ conversationId }: AICopilotProps) {
       <Icon className="absolute -bottom-3 -right-3 h-6 w-6 text-black dark:text-white" />
       {conversationId && <pre>{JSON.stringify(conversationId, null, 2)}</pre>}
       <div className="flex w-full max-w-7xl flex-col gap-4">
-        {(messages.length === 0 || currentConversationId === null) && (
+        {messages.length === 0 && (
           <div className="flex w-full justify-center text-xl font-medium">
             <EvervaultCard
               className="hidden w-full text-sm sm:max-w-sm md:flex md:max-w-md lg:max-w-lg xl:max-w-xl"
@@ -103,15 +115,18 @@ export default function AICopilot({ conversationId }: AICopilotProps) {
               <Input
                 className="h-11 w-full rounded-3xl bg-white bg-opacity-60 pr-10 text-gray-900 shadow-md shadow-gray-200"
                 value={input}
-                placeholder="Chat with Kindi"
+                placeholder={inputPlaceholder}
                 onChange={(e) => setInput(e.target.value)}
               />
-              <button
-                type="submit"
-                className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-600 hover:text-gray-900"
-              >
-                <Triangle className="h-6 w-6 rotate-90" />
-              </button>
+
+              {hasSendNewMessageAccess && (
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-600 hover:text-gray-900"
+                >
+                  <Triangle className="h-6 w-6 rotate-90" />
+                </button>
+              )}
             </div>
           </div>
         </form>
