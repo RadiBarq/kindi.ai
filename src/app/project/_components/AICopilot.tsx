@@ -105,20 +105,22 @@ export default function AICopilot({
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-4xl border border-black/[0.2] p-16 dark:border-white/[0.2]">
-      <Icon className="absolute -left-3 -top-3 h-6 w-6 text-black dark:text-white" />
-      <Icon className="absolute -bottom-3 -left-3 h-6 w-6 text-black dark:text-white" />
-      <Icon className="absolute -right-3 -top-3 h-6 w-6 text-black dark:text-white" />
-      <Icon className="absolute -bottom-3 -right-3 h-6 w-6 text-black dark:text-white" />
+    <div className="relative  mx-auto w-full border border-black/[0.2] p-16 dark:border-white/[0.2] lg:max-w-3xl">
+      <Icon className="invisible absolute -left-3 -top-3 h-6 w-6 text-black dark:text-white lg:visible" />
+      <Icon className="invisible absolute -bottom-3 -left-3 h-6 w-6 text-black dark:text-white lg:visible" />
+      <Icon className="invisible absolute -right-3 -top-3 h-6 w-6 text-black dark:text-white lg:visible" />
+      <Icon className="invisible absolute -bottom-3 -right-3 h-6 w-6 text-black dark:text-white lg:visible" />
       {conversationId && <pre>{JSON.stringify(conversationId, null, 2)}</pre>}
       <div className="flex w-full max-w-7xl flex-col gap-4">
         {messages.length === 0 && (
           <div className="flex w-full justify-center text-xl font-medium">
             <EvervaultCard
-              className="hidden w-full text-sm sm:max-w-sm md:flex md:max-w-md lg:max-w-lg xl:max-w-xl"
+              className="invisible hidden w-full text-sm sm:max-w-sm md:visible md:flex md:max-w-md lg:max-w-lg xl:max-w-xl"
               text={initialMessage}
             />
-            <div className="flex text-center md:hidden">{initialMessage}</div>
+            <div className="flex w-full text-center md:invisible md:hidden">
+              {initialMessage}
+            </div>
           </div>
         )}
         <div className="flex w-full flex-col gap-6">
@@ -190,9 +192,12 @@ export default function AICopilot({
             </div>
           )}
         </div>
-        <form onSubmit={handleSubmit} className="flex w-full justify-center">
-          <div className="fixed bottom-0 mb-8 flex w-full max-w-2xl items-center">
-            <div className="relative w-full">
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-full  items-center justify-center"
+        >
+          <div className="fixed bottom-0 mb-8 flex w-3/4 items-center  lg:w-1/3">
+            <div className="relative w-full ">
               <Input
                 className="h-11 w-full rounded-3xl bg-white bg-opacity-60 pr-10 text-gray-900 shadow-md shadow-gray-200"
                 value={input}
