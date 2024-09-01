@@ -10,7 +10,6 @@ import logo from "@/assets/main_logo@1x.svg";
 import { FormEvent, useState } from "react";
 import { continueConversation } from "@/app/project/actions/actions";
 import { readStreamableValue } from "ai/rsc";
-import { any } from "zod";
 import { Button } from "@/components/ui/button";
 
 export const maxDuration = 30;
@@ -32,6 +31,7 @@ export default function AICopilot({
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
+  const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialMessage = "Hello! I am Kindi How can I assist you today?";
   const inputPlaceholder = hasSendNewMessageAccess
     ? "Chat with Kindi"
@@ -39,14 +39,15 @@ export default function AICopilot({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setInput("");
+    setIsLoading(true);
+    setError(null);
+    setSubmitDisabled(true);
     const newMessages: CoreMessage[] = [
       ...messages,
       { content: input, role: "user" },
     ];
     setMessages(newMessages);
-    setInput("");
-    setIsLoading(true);
-    setError(null);
 
     try {
       const { message, conversationId } = await continueConversation(
@@ -67,16 +68,20 @@ export default function AICopilot({
           },
         ]);
       }
+
+      setSubmitDisabled(false);
     } catch (error: any) {
       console.error(error);
       setError(error.message);
       setIsLoading(false);
+      setSubmitDisabled(false);
     }
   };
 
   const handleRetry = async () => {
     setIsLoading(true);
     setError(null);
+    setSubmitDisabled(true);
 
     try {
       const { message, conversationId } = await continueConversation(
@@ -97,15 +102,17 @@ export default function AICopilot({
           },
         ]);
       }
+      setSubmitDisabled(false);
     } catch (error: any) {
       console.error(error);
       setError(error.message);
       setIsLoading(false);
+      setSubmitDisabled(false);
     }
   };
 
   return (
-    <div className="relative  mx-auto w-full border border-black/[0.2] p-16 dark:border-white/[0.2] lg:max-w-3xl">
+    <div className="relative  mx-auto w-full border border-black/[0.2] p-16 dark:border-white/[0.2] lg:max-w-4xl">
       <Icon className="invisible absolute -left-3 -top-3 h-6 w-6 text-black dark:text-white lg:visible" />
       <Icon className="invisible absolute -bottom-3 -left-3 h-6 w-6 text-black dark:text-white lg:visible" />
       <Icon className="invisible absolute -right-3 -top-3 h-6 w-6 text-black dark:text-white lg:visible" />
@@ -186,6 +193,7 @@ export default function AICopilot({
                 onClick={() => handleRetry()}
                 className="w-20 items-end"
                 variant="outline"
+                disabled={submitDisabled}
               >
                 Retry
               </Button>
@@ -208,7 +216,8 @@ export default function AICopilot({
               {hasSendNewMessageAccess && (
                 <button
                   type="submit"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-600 hover:text-gray-900"
+                  disabled={submitDisabled}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-600 hover:text-gray-900 disabled:text-gray-400"
                 >
                   <Triangle className="h-6 w-6 rotate-90" />
                 </button>
