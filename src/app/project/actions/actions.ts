@@ -14,7 +14,7 @@ export async function continueConversation(
   projectId: string,
 ) {
   const session = await getServerSession(authOptions);
-
+  
   if (messages.length === 0) {
     throw Error("Messages input array cannot be empty!");
   }

@@ -10,6 +10,8 @@ import logo from "@/assets/main_logo@1x.svg";
 import { FormEvent, useState } from "react";
 import { continueConversation } from "@/app/project/actions/actions";
 import { readStreamableValue } from "ai/rsc";
+import { any } from "zod";
+import { Button } from "@/components/ui/button";
 
 export const maxDuration = 30;
 
@@ -28,8 +30,9 @@ export default function AICopilot({
     useState(conversationId);
   const [messages, setMessages] = useState<CoreMessage[]>([]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<String | null>(null);
   const initialMessage = "Hello! I am Kindi How can I assist you today?";
-
   const inputPlaceholder = hasSendNewMessageAccess
     ? "Chat with Kindi"
     : "You don't have access to talk with Kindi";
@@ -42,25 +45,62 @@ export default function AICopilot({
     ];
     setMessages(newMessages);
     setInput("");
+    setIsLoading(true);
+    setError(null);
 
-    const { message, conversationId } = await continueConversation(
-      newMessages,
-      currentConversationId,
-      projectId,
-    );
+    try {
+      const { message, conversationId } = await continueConversation(
+        newMessages,
+        currentConversationId,
+        projectId,
+      );
 
-    setCurrentConversationId(conversationId);
+      setIsLoading(false);
+      setCurrentConversationId(conversationId);
 
-    console.log("Retruned conersation id is: ", conversationId);
+      for await (const content of readStreamableValue(message)) {
+        setMessages([
+          ...newMessages,
+          {
+            role: "assistant",
+            content: content as string,
+          },
+        ]);
+      }
+    } catch (error: any) {
+      console.error(error);
+      setError(error.message);
+      setIsLoading(false);
+    }
+  };
 
-    for await (const content of readStreamableValue(message)) {
-      setMessages([
-        ...newMessages,
-        {
-          role: "assistant",
-          content: content as string,
-        },
-      ]);
+  const handleRetry = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { message, conversationId } = await continueConversation(
+        messages,
+        currentConversationId,
+        projectId,
+      );
+
+      setIsLoading(false);
+      setCurrentConversationId(conversationId);
+
+      for await (const content of readStreamableValue(message)) {
+        setMessages([
+          ...messages,
+          {
+            role: "assistant",
+            content: content as string,
+          },
+        ]);
+      }
+    } catch (error: any) {
+      console.error(error);
+      setError(error.message);
+      setIsLoading(false);
     }
   };
 
@@ -81,15 +121,37 @@ export default function AICopilot({
             <div className="flex text-center md:hidden">{initialMessage}</div>
           </div>
         )}
+        <div className="flex w-full flex-col gap-6">
+          {messages.map((m, i) => (
+            <div
+              key={i}
+              className={`flex max-w-xl items-start ${
+                m.role === "user" ? "self-end" : "self-start"
+              }`}
+            >
+              {m.role !== "user" && (
+                <Image
+                  src={logo}
+                  alt="Kindi Avatar"
+                  className="mr-3 rounded-full"
+                  width={40}
+                  height={40}
+                />
+              )}
+              <div
+                className={`whitespace-pre-wrap rounded-2xl px-4 py-2 shadow-md  ${
+                  m.role === "user"
+                    ? "bg-black text-white shadow-gray-600"
+                    : "bg-white bg-opacity-60 text-gray-900 shadow-gray-200"
+                }`}
+              >
+                {m.content as String}
+              </div>
+            </div>
+          ))}
 
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`flex items-start ${
-              m.role === "user" ? "self-end" : "self-start"
-            }`}
-          >
-            {m.role !== "user" && (
+          {isLoading && (
+            <div className="flex self-start">
               <Image
                 src={logo}
                 alt="Kindi Avatar"
@@ -97,18 +159,37 @@ export default function AICopilot({
                 width={40}
                 height={40}
               />
-            )}
-            <div
-              className={` whitespace-pre-wrap rounded-2xl px-4 py-2 shadow-md  ${
-                m.role === "user"
-                  ? "bg-black text-white shadow-gray-600"
-                  : "bg-white bg-opacity-60 text-gray-900 shadow-gray-200"
-              }`}
-            >
-              {m.content as String}
+              <span className="relative flex h-4 w-4">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-900 opacity-75"></span>
+                <span className="relative inline-flex h-4 w-4 rounded-full bg-gray-900"></span>
+              </span>
             </div>
-          </div>
-        ))}
+          )}
+
+          {error && (
+            <div className="flex max-w-sm flex-col items-end gap-4">
+              <div className="flex self-start">
+                <Image
+                  src={logo}
+                  alt="Kindi Avatar"
+                  className="mr-3 rounded-full"
+                  width={40}
+                  height={40}
+                />
+                <div className="whitespace-pre-wrap rounded-2xl bg-red-400 px-4 py-2 shadow-md">
+                  Unexpected error happened please try again!
+                </div>
+              </div>
+              <Button
+                onClick={() => handleRetry()}
+                className="w-20 items-end"
+                variant="outline"
+              >
+                Retry
+              </Button>
+            </div>
+          )}
+        </div>
         <form onSubmit={handleSubmit} className="flex w-full justify-center">
           <div className="fixed bottom-0 mb-8 flex w-full max-w-2xl items-center">
             <div className="relative w-full">
