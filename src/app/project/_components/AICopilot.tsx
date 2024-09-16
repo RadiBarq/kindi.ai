@@ -112,11 +112,11 @@ export default function AICopilot({
   };
 
   return (
-    <div className="relative  mx-auto w-full border border-black/[0.2] p-16 dark:border-white/[0.2] lg:max-w-4xl">
-      <Icon className="invisible absolute -left-3 -top-3 h-6 w-6 text-black dark:text-white lg:visible" />
-      <Icon className="invisible absolute -bottom-3 -left-3 h-6 w-6 text-black dark:text-white lg:visible" />
-      <Icon className="invisible absolute -right-3 -top-3 h-6 w-6 text-black dark:text-white lg:visible" />
-      <Icon className="invisible absolute -bottom-3 -right-3 h-6 w-6 text-black dark:text-white lg:visible" />
+    <div className="relative top-32 mx-auto w-full border border-black/[0.2] px-4 py-16 dark:border-white/[0.2] md:px-16 lg:top-0 lg:max-w-4xl">
+      <Icon className="-left-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
+      <Icon className="-bottom-3 -left-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
+      <Icon className="-right-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
+      <Icon className="-bottom-3 -right-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
       {conversationId && <pre>{JSON.stringify(conversationId, null, 2)}</pre>}
       <div className="flex w-full max-w-7xl flex-col gap-4">
         {messages.length === 0 && (
@@ -125,16 +125,16 @@ export default function AICopilot({
               className="invisible hidden w-full text-sm sm:max-w-sm md:visible md:flex md:max-w-md lg:max-w-lg xl:max-w-xl"
               text={initialMessage}
             />
-            <div className="flex w-full text-center md:invisible md:hidden">
+            <div className="flex w-full px-10 text-left text-4xl font-semibold md:invisible md:hidden">
               {initialMessage}
             </div>
           </div>
         )}
-        <div className="flex w-full flex-col gap-6">
+        <div className="flex w-full flex-col items-center justify-center gap-6">
           {messages.map((m, i) => (
             <div
               key={i}
-              className={`flex max-w-xl items-start ${
+              className={`flex  max-w-xl items-start ${
                 m.role === "user" ? "self-end" : "self-start"
               }`}
             >

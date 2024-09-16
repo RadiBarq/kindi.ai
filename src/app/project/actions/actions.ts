@@ -14,7 +14,7 @@ export async function continueConversation(
   projectId: string,
 ) {
   const session = await getServerSession(authOptions);
-  
+
   if (messages.length === 0) {
     throw Error("Messages input array cannot be empty!");
   }
@@ -69,7 +69,7 @@ export async function continueConversation(
   );
 
   const result = await streamText({
-    model: openai("gpt-4-turbo"),
+    model: openai("gpt-3.5-turbo"),
     system: `You are called Kindi, an AI assistant that helps customer support employees to answer the customer questions. 
       Start by greeting the employee and how can I help you and mention your name.
        `,
