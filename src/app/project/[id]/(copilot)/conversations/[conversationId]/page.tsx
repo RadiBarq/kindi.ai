@@ -1,10 +1,15 @@
-import AICopilot from "../../_components/AICopilot";
+import AICopilot from "../../../../_components/AICopilot";
 import { hasAccess } from "@/lib/user/projectAccess";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 
-export default async function Copilot({ params }: { params: { id: string } }) {
+export default async function Conversations({
+  params,
+}: {
+  params: { id: string; conversationId: string };
+}) {
   const projectId = params.id;
+  const conversationId = params.conversationId;
   const session = await getServerSession(authOptions);
   const hasSendNewMessageAccess = hasAccess({
     projectId: projectId,
@@ -17,7 +22,7 @@ export default async function Copilot({ params }: { params: { id: string } }) {
       <AICopilot
         hasSendNewMessageAccess={hasSendNewMessageAccess}
         projectId={projectId}
-        conversationId={null}
+        conversationId={conversationId}
       />
     </div>
   );

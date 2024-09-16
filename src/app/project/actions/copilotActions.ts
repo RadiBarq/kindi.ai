@@ -52,11 +52,12 @@ export async function continueConversation(
         "You don't belong to the project that you are trying to initiate new copilot conversation inside it.",
       );
     }
-
+    let conversationTitle = newMessage.content.slice(0, 60);
     const result = await prismaDB.copilotConversation.create({
       data: {
         projectId,
         userId,
+        title: conversationTitle,
       },
     });
     newConversationId = result.id;
@@ -93,6 +94,30 @@ export async function continueConversation(
 
   const stream = createStreamableValue(result.textStream);
   return { message: stream.value, conversationId: newConversationId };
+}
+
+export async function searchConversationHistory(
+  projectId: string,
+  query: string,
+) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+  const userId = session.user.id ?? "";
+
+  const conversations = await prismaDB.copilotConversation.findMany({
+    where: {
+      projectId: projectId,
+      userId: userId,
+      title: {
+        contains: query,
+        mode: "insensitive",
+      },
+    },
+  });
+
+  return conversations;
 }
 
 async function saveMessageToConversation(
