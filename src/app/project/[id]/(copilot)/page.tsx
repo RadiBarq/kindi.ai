@@ -3,6 +3,7 @@ import { hasAccess } from "@/lib/user/projectAccess";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 
+
 export default async function Copilot({ params }: { params: { id: string } }) {
   const projectId = params.id;
   const session = await getServerSession(authOptions);
@@ -18,6 +19,7 @@ export default async function Copilot({ params }: { params: { id: string } }) {
         hasSendNewMessageAccess={hasSendNewMessageAccess}
         projectId={projectId}
         conversationId={null}
+        existingMessages={[]}
       />
     </div>
   );

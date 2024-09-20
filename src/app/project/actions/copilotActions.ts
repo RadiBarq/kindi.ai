@@ -120,6 +120,34 @@ export async function searchConversationHistory(
   return conversations;
 }
 
+export async function conversationMessages(conversationId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+  const userId = session.user.id ?? "";
+
+  // Check if conversation belongs to this user
+  const converstation = await prismaDB.copilotConversation.findFirst({
+    where: {
+      userId: userId,
+      id: conversationId,
+    },
+  });
+
+  if (!converstation) {
+    throw Error("You don't belong to this conversation!.");
+  }
+
+  const messages = await prismaDB.copilotConversationMessage.findMany({
+    where: {
+      conversationId: conversationId,
+    },
+  });
+
+  return messages;
+}
+
 async function saveMessageToConversation(
   conversationId: string,
   message: string,

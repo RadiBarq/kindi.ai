@@ -2,7 +2,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { searchConversationHistory } from "../actions/copilotActions";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface Item {
   id: string;
@@ -17,7 +17,6 @@ export default function SearchList({ projectId }: SearchListProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [items, setItems] = useState<Item[]>([]);
   const [isPending, startTransition] = useTransition();
-  const pathname = usePathname(); // Get the current pathname
   const router = useRouter();
 
   const fetchConversationHistory = async () => {

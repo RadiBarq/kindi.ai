@@ -19,16 +19,18 @@ interface AICopilotProps {
   conversationId: string | null;
   projectId: string;
   hasSendNewMessageAccess: boolean;
+  existingMessages: CoreMessage[];
 }
 
 export default function AICopilot({
   conversationId,
   projectId,
   hasSendNewMessageAccess,
+  existingMessages,
 }: AICopilotProps) {
   const [currentConversationId, setCurrentConversationId] =
     useState(conversationId);
-  const [messages, setMessages] = useState<CoreMessage[]>([]);
+  const [messages, setMessages] = useState<CoreMessage[]>(existingMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
