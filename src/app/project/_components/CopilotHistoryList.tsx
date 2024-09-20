@@ -69,9 +69,9 @@ export default function SearchList({ projectId }: SearchListProps) {
                 <li
                   key={item.id}
                   onClick={() => {
-                    // Construct the new URL relative to the current pathname
-                    const newPath = `${pathname.replace(/\/$/, "")}/conversations/${item.id}`;
-                    router.push(newPath);
+                    router.push(
+                      `/project/${projectId}/conversations/${item.id}`,
+                    );
                   }}
                   className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-gray-100"
                 >
