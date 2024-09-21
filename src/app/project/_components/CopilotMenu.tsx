@@ -7,12 +7,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 import CopilotHistoryList from "./CopilotHistoryList";
+import { ConversationHistory } from "../_types/types";
 
 interface CopilotMenuProps {
   projectId: string;
+  conversationsHistory: ConversationHistory[];
 }
 
-export default function CopilotMenu({ projectId }: CopilotMenuProps) {
+export default function CopilotMenu({
+  projectId,
+  conversationsHistory,
+}: CopilotMenuProps) {
   return (
     <Popover>
       <div className="fixed z-10 flex flex-row items-center justify-center  gap-4 rounded bg-white  px-2 py-2   lg:flex-col lg:border lg:border-gray-200 lg:shadow-md lg:shadow-gray-200">
@@ -36,7 +41,10 @@ export default function CopilotMenu({ projectId }: CopilotMenuProps) {
         </PopoverTrigger>
       </div>
       <PopoverContent className="w-80">
-        <CopilotHistoryList projectId={projectId} />
+        <CopilotHistoryList
+          projectId={projectId}
+          conversationsHistory={conversationsHistory}
+        />
       </PopoverContent>
     </Popover>
   );

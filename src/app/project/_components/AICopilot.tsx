@@ -12,6 +12,9 @@ import { continueConversation } from "@/app/project/actions/copilotActions";
 import { readStreamableValue } from "ai/rsc";
 import { Button } from "@/components/ui/button";
 import CopilotMenu from "./CopilotMenu";
+import { useEffect } from "react";
+import { searchConversationHistory } from "@/app/project/actions/copilotActions";
+import { ConversationHistory } from "../_types/types";
 
 export const maxDuration = 30;
 
@@ -36,6 +39,9 @@ export default function AICopilot({
   const [error, setError] = useState<String | null>(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialMessage = "Hello! I am Kindi How can I assist you today?";
+  const [conversationsHistory, setConversationsHistory] = useState<
+    ConversationHistory[] | null
+  >(null);
   const inputPlaceholder = hasSendNewMessageAccess
     ? "Chat with Kindi"
     : "You don't have access to talk with Kindi";
@@ -114,9 +120,35 @@ export default function AICopilot({
     }
   };
 
+  useEffect(() => {
+    const fetchConversationsHistory = async () => {
+      try {
+        const data = await searchConversationHistory(projectId, "");
+        const conversationsHistory: ConversationHistory[] = data.map((item) => {
+          return {
+            id: item.id,
+            name: item.title,
+          };
+        });
+        setConversationsHistory(conversationsHistory);
+      } catch (error) {
+        setConversationsHistory([]);
+        if (error instanceof Error) {
+          console.error(error.message);
+          return;
+        }
+        console.error(error);
+      }
+    };
+    fetchConversationsHistory();
+  }, []);
+
   return (
     <div className="flex flex-col lg:flex-row">
-      <CopilotMenu projectId={projectId} />
+      <CopilotMenu
+        conversationsHistory={conversationsHistory}
+        projectId={projectId}
+      />
       <div className="relative top-32 mx-auto w-full border border-black/[0.2] px-4 py-16 dark:border-white/[0.2] md:px-16 lg:top-0 lg:max-w-4xl">
         <Icon className="-left-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-bottom-3 -left-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
