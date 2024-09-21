@@ -11,7 +11,7 @@ import { ConversationHistory } from "../_types/types";
 
 interface CopilotMenuProps {
   projectId: string;
-  conversationsHistory: ConversationHistory[];
+  conversationsHistory: ConversationHistory[] | null;
 }
 
 export default function CopilotMenu({

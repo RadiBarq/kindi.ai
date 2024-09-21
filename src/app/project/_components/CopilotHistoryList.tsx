@@ -97,7 +97,7 @@ export default function SearchList({
                   key={item.id}
                   onClick={() => {
                     router.push(
-                      `/project/${projectId}/conversations/${item.id}`,
+                      `/project/${projectId}/copilot/${item.id}`,
                     );
                   }}
                   className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-gray-100"
