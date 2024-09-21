@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Triangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@/components/ui/evervault-card";
@@ -11,7 +12,7 @@ import { FormEvent, useState } from "react";
 import { continueConversation } from "@/app/project/actions/copilotActions";
 import { readStreamableValue } from "ai/rsc";
 import { Button } from "@/components/ui/button";
-import CopilotMenu from "./CopilotMenu";
+const CopilotMenu = dynamic(() => import("./CopilotMenu"), { ssr: false });
 import { useEffect } from "react";
 import { searchConversationHistory } from "@/app/project/actions/copilotActions";
 import { ConversationHistory } from "../_types/types";
@@ -142,6 +143,10 @@ export default function AICopilot({
     };
     fetchConversationsHistory();
   }, [projectId]);
+
+  useEffect(() => {
+    setCurrentConversationId(conversationId);
+  }, [conversationId]);
 
   return (
     <div className="flex flex-col lg:flex-row">
