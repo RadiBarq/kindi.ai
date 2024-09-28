@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import ErrorMessage from "@/components/misc/Error";
+import { AI } from "../_utils/ai";
 
 export default async function Layout({
   children,
@@ -58,7 +59,9 @@ export default async function Layout({
             }}
           />
           {isProjectFound && (
-            <main className="overflow-auto lg:ml-48">{children}</main>
+            <main className="overflow-auto lg:ml-52">
+              <AI>{children}</AI>
+            </main>
           )}
 
           {!isProjectFound && (

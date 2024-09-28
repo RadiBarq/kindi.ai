@@ -150,7 +150,7 @@ export default function Navbar({
                     data-active={pathname === `${rootPath}/datasources`}
                   >
                     <Box className="h-7 w-7" />
-                    Datasources
+                    Knowledge base
                   </Link>
                   <Link
                     href={`${rootPath}/settings`}

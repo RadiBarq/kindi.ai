@@ -48,3 +48,31 @@
     --ring: 240 4.9% 83.9%;
   }
 }
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #000;
+  }
+}
+
+.typing-animation {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  animation:
+    typing 1s steps(60, end) forwards,
+    blink 0.75s step-end infinite;
+}

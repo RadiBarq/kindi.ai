@@ -48,7 +48,7 @@ export default async function Layout({
               name: session?.user.name,
             }}
           />
-          {<main className="overflow-auto lg:ml-48">{children}</main>}
+          {<main className="overflow-auto lg:ml-52">{children}</main>}
         </div>
       )}
     </div>

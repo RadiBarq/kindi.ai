@@ -88,7 +88,7 @@ export default function SideMenu({
         feedbackDialogOpen ? setFeedbackDialogOpen : setCreateProjectDialogOpen
       }
     >
-      <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-48 lg:flex">
+      <div className="fixed hidden flex-col overflow-hidden rounded-xl border border-gray-200 bg-background px-4 py-6 text-foreground shadow-md shadow-gray-200 md:w-52 lg:flex">
         {feedbackDialogOpen && <FeedbackDialog />}
         {createProjectDialogOpen && (
           <CreateProjectDialog onProjectCreated={handleNewProjectCreated} />
@@ -126,7 +126,7 @@ export default function SideMenu({
                 data-active={pathname === `${rootPath}/datasources`}
               >
                 <Box className="h-5 w-5" />
-                Datasources
+                Knowledge base
               </Link>
               <Link
                 href={`${rootPath}/settings`}

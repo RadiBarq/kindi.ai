@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function Datasources() {
-  return <h1>Datasources page</h1>;
+  return <h1>Knowledge base</h1>;
 }

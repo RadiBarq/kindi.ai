@@ -7,7 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
 import CopilotHistoryList from "./CopilotHistoryList";
-import { ConversationHistory } from "../_types/types";
+import ConversationHistory from "../_types/conversationHistory";
 
 interface CopilotMenuProps {
   projectId: string;

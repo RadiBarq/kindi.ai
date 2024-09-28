@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { searchConversationHistory } from "../actions/copilotActions";
 import { useRouter } from "next/navigation";
-import { ConversationHistory } from "../_types/types";
+import ConversationHistory from "../_types/conversationHistory";
 import { Button } from "@/components/ui/button";
 
 interface SearchListProps {
@@ -96,9 +96,7 @@ export default function SearchList({
                 <li
                   key={item.id}
                   onClick={() => {
-                    router.push(
-                      `/project/${projectId}/copilot/${item.id}`,
-                    );
+                    router.push(`/project/${projectId}/copilot/${item.id}`);
                   }}
                   className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-gray-100"
                 >

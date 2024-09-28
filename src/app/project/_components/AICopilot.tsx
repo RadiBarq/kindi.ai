@@ -6,16 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Icon } from "@/components/ui/evervault-card";
 import { EvervaultCard } from "@/components/ui/evervault-card";
 import { type CoreMessage } from "ai";
+import ClientMessage from "../_types/clientMessage";
 import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
 import { FormEvent, useState } from "react";
-import { continueConversation } from "@/app/project/actions/copilotActions";
-import { readStreamableValue } from "ai/rsc";
+import { submitMessage } from "@/app/project/actions/copilotActions";
 import { Button } from "@/components/ui/button";
 const CopilotMenu = dynamic(() => import("./CopilotMenu"), { ssr: false });
 import { useEffect } from "react";
 import { searchConversationHistory } from "@/app/project/actions/copilotActions";
-import { ConversationHistory } from "../_types/types";
+import ConversationHistory from "../_types/conversationHistory";
 
 export const maxDuration = 30;
 
@@ -34,7 +34,7 @@ export default function AICopilot({
 }: AICopilotProps) {
   const [currentConversationId, setCurrentConversationId] =
     useState(conversationId);
-  const [messages, setMessages] = useState<CoreMessage[]>(existingMessages);
+  const [messages, setMessages] = useState<ClientMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
@@ -47,38 +47,37 @@ export default function AICopilot({
     ? "Chat with Kindi"
     : "You don't have access to talk with Kindi";
 
+  const isMessageLoading = (message: ClientMessage) => {
+    console.log(message.text);
+    return (message.text as string) === "";
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setInput("");
     setIsLoading(true);
     setError(null);
     setSubmitDisabled(true);
-    const newMessages: CoreMessage[] = [
-      ...messages,
-      { content: input, role: "user" },
-    ];
-    setMessages(newMessages);
-
+    setMessages((currentMessages) => [
+      ...currentMessages,
+      {
+        id: "123",
+        status: "user.message.created",
+        text: input,
+        gui: null,
+        role: "user",
+      },
+    ]);
     try {
-      const { message, conversationId } = await continueConversation(
-        newMessages,
-        currentConversationId,
+      const { message, threadId } = await submitMessage(
+        input,
+        conversationId,
         projectId,
       );
+      setMessages((currentMessages) => [...currentMessages, message]);
 
       setIsLoading(false);
-      setCurrentConversationId(conversationId);
-
-      for await (const content of readStreamableValue(message)) {
-        setMessages([
-          ...newMessages,
-          {
-            role: "assistant",
-            content: content as string,
-          },
-        ]);
-      }
-
+      setCurrentConversationId(threadId);
       setSubmitDisabled(false);
     } catch (error: any) {
       console.error(error);
@@ -94,24 +93,14 @@ export default function AICopilot({
     setSubmitDisabled(true);
 
     try {
-      const { message, conversationId } = await continueConversation(
-        messages,
-        currentConversationId,
+      const { message, threadId } = await submitMessage(
+        input,
+        conversationId,
         projectId,
       );
-
+      setMessages((currentMessages) => [...currentMessages, message]);
       setIsLoading(false);
-      setCurrentConversationId(conversationId);
-
-      for await (const content of readStreamableValue(message)) {
-        setMessages([
-          ...messages,
-          {
-            role: "assistant",
-            content: content as string,
-          },
-        ]);
-      }
+      setCurrentConversationId(threadId);
       setSubmitDisabled(false);
     } catch (error: any) {
       console.error(error);
@@ -171,15 +160,16 @@ export default function AICopilot({
               </div>
             </div>
           )}
+
           <div className="flex w-full flex-col items-center justify-center gap-6">
-            {messages.map((m, i) => (
+            {messages.map((message) => (
               <div
-                key={i}
-                className={`flex  max-w-xl items-start ${
-                  m.role === "user" ? "self-end" : "self-start"
+                key={message.id}
+                className={`flex max-w-xl items-start ${
+                  message.role === "user" ? "self-end" : "self-start"
                 }`}
               >
-                {m.role !== "user" && (
+                {message.role !== "user" && (
                   <Image
                     src={logo}
                     alt="Kindi Avatar"
@@ -189,32 +179,18 @@ export default function AICopilot({
                   />
                 )}
                 <div
-                  className={`whitespace-pre-wrap rounded-2xl px-4 py-2 shadow-md  ${
-                    m.role === "user"
+                  className={`whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md ${
+                    message.role === "user"
                       ? "bg-black text-white shadow-gray-600"
                       : "bg-white bg-opacity-60 text-gray-900 shadow-gray-200"
                   }`}
                 >
-                  {m.content as String}
+                  {message.text}
                 </div>
               </div>
             ))}
 
-            {isLoading && (
-              <div className="flex self-start">
-                <Image
-                  src={logo}
-                  alt="Kindi Avatar"
-                  className="mr-3 rounded-full"
-                  width={40}
-                  height={40}
-                />
-                <span className="relative flex h-4 w-4">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-900 opacity-75"></span>
-                  <span className="relative inline-flex h-4 w-4 rounded-full bg-gray-900"></span>
-                </span>
-              </div>
-            )}
+            {/* {isLoading && <MessageLoading />} */}
 
             {error && (
               <div className="flex max-w-sm flex-col items-end gap-4">
@@ -268,6 +244,24 @@ export default function AICopilot({
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+function MessageLoading() {
+  return (
+    <div className="flex self-start">
+      <Image
+        src={logo}
+        alt="Kindi Avatar"
+        className="mr-3 rounded-full"
+        width={40}
+        height={40}
+      />
+      <span className="relative flex h-4 w-4">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-900 opacity-75"></span>
+        <span className="relative inline-flex h-4 w-4 rounded-full bg-gray-900"></span>
+      </span>
     </div>
   );
 }
