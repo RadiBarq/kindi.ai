@@ -104,7 +104,7 @@ export async function searchConversationHistory(
   }
   const userId = session.user.id ?? "";
 
-  const conversations = await prismaDB.copilotConversation.findMany({
+  const conversations = await prismaDB.copilotThread.findMany({
     where: {
       projectId: projectId,
       userId: userId,
@@ -126,7 +126,7 @@ export async function conversationMessages(conversationId: string) {
   const userId = session.user.id ?? "";
 
   // Check if conversation belongs to this user
-  const converstation = await prismaDB.copilotConversation.findFirst({
+  const converstation = await prismaDB.copilotThread.findFirst({
     where: {
       userId: userId,
       id: conversationId,

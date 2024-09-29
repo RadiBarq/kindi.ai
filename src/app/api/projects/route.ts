@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { ProjectRole } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { openai } from "@/lib/openai";
 import { z } from "zod";
 
 export async function POST(req: Request) {
@@ -33,10 +34,18 @@ export async function POST(req: Request) {
 
     const { projectName } = validation.data;
 
+    const projectAssistant = await openai.beta.assistants.create({
+      instructions: "",
+      name: `${projectName} Default`,
+      tools: [{ type: "code_interpreter" }, { type: "file_search" }],
+      model: "gpt-4o",
+    });
+
     const result = await prismaDB.$transaction(async (tx) => {
       const newProject = await tx.project.create({
         data: {
           name: projectName,
+          defaultAssistantId: projectAssistant.id,
         },
       });
 
@@ -50,6 +59,7 @@ export async function POST(req: Request) {
 
       return newProject;
     });
+
     revalidatePath("/project");
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
