@@ -42,6 +42,12 @@ export async function submitMessage(
 
       runQueue.push({ id: generateId(), run });
     } else {
+      // Fetch project default assistant here.
+      const assistantId = prismaDB.project.findFirst({
+        where: { id: projectId },
+        select: {defaultAssistantId}
+      });
+
       const run = await openai.beta.threads.createAndRun({
         assistant_id: ASSISTANT_ID,
         stream: true,
