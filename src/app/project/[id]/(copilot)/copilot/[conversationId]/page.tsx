@@ -2,6 +2,7 @@ import AICopilot from "../../../../_components/AICopilot";
 import { hasAccess } from "@/lib/user/projectAccess";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
+import { getProject } from "@/app/project/actions/projectActions";
 import { CoreMessage } from "ai";
 import { conversationMessages } from "@/app/project/actions/copilotActions";
 import ErrorMessage from "@/components/misc/Error";
@@ -13,37 +14,41 @@ export default async function Conversations({
 }) {
   const projectId = params.id;
   const conversationId = params.conversationId;
-  const session = await getServerSession(authOptions);
-  const hasSendNewMessageAccess = hasAccess({
-    projectId: projectId,
-    scope: "conversations:create",
-    session: session,
-  });
 
   try {
-    const messages = await conversationMessages(conversationId);
-    const coreMessages = messages.map(
-      (conversation) =>
-        ({
-          role: conversation.role,
-          content: conversation.message,
-        }) as CoreMessage,
-    );
+    const session = await getServerSession(authOptions);
+    const hasCopilotCreateAccess = hasAccess({
+      projectId: projectId,
+      scope: "copilot:create",
+      session: session,
+    });
+
+    const project = await getProject(projectId);
+    const { messages, threadId } = await conversationMessages(conversationId);
     return (
       <div className="mx-auto flex min-h-screen w-full flex-col lg:py-24">
         <AICopilot
-          hasSendNewMessageAccess={hasSendNewMessageAccess}
+          hasCopilotCreateAccess={hasCopilotCreateAccess}
           projectId={projectId}
-          conversationId={conversationId}
-          existingMessages={coreMessages}
+          assistantId={project.defaultAssistantId}
+          threadId={threadId}
+          existingMessages={messages}
         />
       </div>
     );
   } catch (error: any) {
-    console.error(error);
+    let errorMessage = "";
+    if (error instanceof Error) {
+      console.error(error.message);
+      errorMessage = error.message;
+    } else {
+      console.log(error);
+      errorMessage = "Something went wrong! Please try again later.";
+    }
+
     return (
       <div className="px-10 py-32">
-        <ErrorMessage withImage={false} message={error.message} />
+        <ErrorMessage withImage={false} message={errorMessage} />
       </div>
     );
   }

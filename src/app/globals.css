@@ -73,6 +73,6 @@
   white-space: nowrap;
   overflow: hidden;
   animation:
-    typing 1s steps(60, end) forwards,
+    typing 2s steps(40, end) forwards,
     blink 0.75s step-end infinite;
 }

@@ -20,21 +20,22 @@ import ConversationHistory from "../_types/conversationHistory";
 export const maxDuration = 30;
 
 interface AICopilotProps {
-  conversationId: string | null;
+  threadId: string | null;
   projectId: string;
-  hasSendNewMessageAccess: boolean;
-  existingMessages: CoreMessage[];
+  hasCopilotCreateAccess: boolean;
+  assistantId: string;
+  existingMessages: ClientMessage[];
 }
 
 export default function AICopilot({
-  conversationId,
+  threadId,
   projectId,
-  hasSendNewMessageAccess,
+  hasCopilotCreateAccess,
+  assistantId,
   existingMessages,
 }: AICopilotProps) {
-  const [currentConversationId, setCurrentConversationId] =
-    useState(conversationId);
-  const [messages, setMessages] = useState<ClientMessage[]>([]);
+  const [currentThreadId, setCurrentThreadId] = useState(threadId);
+  const [messages, setMessages] = useState<ClientMessage[]>(existingMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
@@ -43,7 +44,7 @@ export default function AICopilot({
   const [conversationsHistory, setConversationsHistory] = useState<
     ConversationHistory[] | null
   >(null);
-  const inputPlaceholder = hasSendNewMessageAccess
+  const inputPlaceholder = hasCopilotCreateAccess
     ? "Chat with Kindi"
     : "You don't have access to talk with Kindi";
 
@@ -71,13 +72,17 @@ export default function AICopilot({
     try {
       const { message, threadId } = await submitMessage(
         input,
-        conversationId,
+        currentThreadId,
         projectId,
+        assistantId,
       );
+
+      console.log(`Thread id is: ${threadId}`);
+
       setMessages((currentMessages) => [...currentMessages, message]);
 
       setIsLoading(false);
-      setCurrentConversationId(threadId);
+      setCurrentThreadId(threadId);
       setSubmitDisabled(false);
     } catch (error: any) {
       console.error(error);
@@ -95,12 +100,13 @@ export default function AICopilot({
     try {
       const { message, threadId } = await submitMessage(
         input,
-        conversationId,
+        currentThreadId,
         projectId,
+        assistantId,
       );
       setMessages((currentMessages) => [...currentMessages, message]);
       setIsLoading(false);
-      setCurrentConversationId(threadId);
+      setCurrentThreadId(threadId);
       setSubmitDisabled(false);
     } catch (error: any) {
       console.error(error);
@@ -134,8 +140,8 @@ export default function AICopilot({
   }, [projectId]);
 
   useEffect(() => {
-    setCurrentConversationId(conversationId);
-  }, [conversationId]);
+    setCurrentThreadId(threadId);
+  }, [threadId]);
 
   return (
     <div className="flex flex-col lg:flex-row">
@@ -161,7 +167,7 @@ export default function AICopilot({
             </div>
           )}
 
-          <div className="flex w-full flex-col items-center justify-center gap-6">
+          <div className="flex w-full flex-col items-start justify-center gap-6">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -193,7 +199,7 @@ export default function AICopilot({
             {/* {isLoading && <MessageLoading />} */}
 
             {error && (
-              <div className="flex max-w-sm flex-col items-end gap-4">
+              <div className="items- flex w-full max-w-xs flex-col gap-4">
                 <div className="flex self-start">
                   <Image
                     src={logo}
@@ -230,7 +236,7 @@ export default function AICopilot({
                   onChange={(e) => setInput(e.target.value)}
                 />
 
-                {hasSendNewMessageAccess && (
+                {hasCopilotCreateAccess && (
                   <button
                     type="submit"
                     disabled={submitDisabled}
@@ -247,21 +253,20 @@ export default function AICopilot({
     </div>
   );
 }
-
-function MessageLoading() {
-  return (
-    <div className="flex self-start">
-      <Image
-        src={logo}
-        alt="Kindi Avatar"
-        className="mr-3 rounded-full"
-        width={40}
-        height={40}
-      />
-      <span className="relative flex h-4 w-4">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-900 opacity-75"></span>
-        <span className="relative inline-flex h-4 w-4 rounded-full bg-gray-900"></span>
-      </span>
-    </div>
-  );
-}
+// function MessageLoading() {
+//   return (
+//     <div className="flex self-start">
+//       <Image
+//         src={logo}
+//         alt="Kindi Avatar"
+//         className="mr-3 rounded-full"
+//         width={40}
+//         height={40}
+//       />
+//       <span className="relative flex h-4 w-4">
+//         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-900 opacity-75"></span>
+//         <span className="relative inline-flex h-4 w-4 rounded-full bg-gray-900"></span>
+//       </span>
+//     </div>
+//   );
+// }

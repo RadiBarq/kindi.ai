@@ -11,8 +11,8 @@ const scopes = [
   "project:update",
   "project:transfer",
 
-  // Conversations
-  "conversations:create",
+  // Copilot
+  "copilot:create",
 ];
 
 export type Scope = (typeof scopes)[number];
@@ -25,15 +25,15 @@ export const roleAccessRights: Record<ProjectRole, Scope[]> = {
     "project:delete",
     "project:update",
     "project:transfer",
-    "conversations:create",
+    "copilot:create",
   ],
   ADMIN: [
     "project:update",
     "members:read",
     "members:create",
     "members:delete",
-    "conversations:create",
+    "copilot:create",
   ],
-  MEMBER: ["members:read", "conversations:create"],
-  VIEWER: [],
+  MEMBER: ["members:read", "copilot:create"],
+  VIEWER: ["copilot:create"],
 };

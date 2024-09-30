@@ -6,88 +6,46 @@ import { hasAccess } from "@/lib/user/projectAccess";
 import ClientMessage from "../_types/clientMessage";
 import { openai } from "@/lib/openai";
 import { generateId } from "ai";
-import {
-  createStreamableUI,
-  createStreamableValue,
-  StreamableValue,
-} from "ai/rsc";
+import { createStreamableUI, createStreamableValue } from "ai/rsc";
 import prismaDB from "@/lib/db/prisma";
 import { Message } from "../_components/message";
-const ASSISTANT_ID = "asst_qG4fERbGdCCSMcunLCIf3QE0";
+import { threadId } from "worker_threads";
 
 export async function submitMessage(
   question: string,
   threadId: string | null,
   projectId: string,
+  assistantId: string,
 ): Promise<{ message: ClientMessage; threadId: string }> {
+  // Create streams
   const textStream = createStreamableValue("");
-  const statustream = createStreamableValue("Thinking...");
+  const statusStream = createStreamableValue("Thinking...");
   const textUIStream = createStreamableUI(
-    <Message textStream={textStream.value} statusStream={statustream.value} />,
+    <Message textStream={textStream.value} statusStream={statusStream.value} />,
   );
 
-  const runQueue = [];
-  let newTheadId = threadId ?? "";
+  // Initialize runQueue
+  const runQueue: any = [];
+
+  // Initialize newThreadId
+  let newThreadId = threadId ?? "";
+
   (async () => {
     if (threadId) {
-      await openai.beta.threads.messages.create(threadId, {
-        role: "user",
-        content: question,
-      });
-
-      const run = await openai.beta.threads.runs.create(threadId, {
-        assistant_id: ASSISTANT_ID,
-        stream: true,
-      });
-
-      runQueue.push({ id: generateId(), run });
+      await handleExistingThread(threadId, assistantId, question, runQueue);
     } else {
-      // Fetch project default assistant here.
-      const assistantId = prismaDB.project.findFirst({
-        where: { id: projectId },
-        select: {defaultAssistantId}
-      });
-
-      const run = await openai.beta.threads.createAndRun({
-        assistant_id: ASSISTANT_ID,
-        stream: true,
-        thread: {
-          messages: [{ role: "user", content: question }],
-        },
-      });
-
-      runQueue.push({ id: generateId(), run });
+      newThreadId = await handleNewThread(
+        projectId,
+        assistantId,
+        question,
+        runQueue,
+      );
     }
 
-    while (runQueue.length > 0) {
-      const latestRun = runQueue.shift();
-
-      if (latestRun) {
-        for await (const delta of latestRun.run) {
-          const { data, event } = delta;
-          const evenStatus = getEventStatus(event);
-          statustream.update(evenStatus);
-
-          if (event === "thread.created") {
-            newTheadId = data.id;
-          } else if (event === "thread.run.created") {
-            // RUN_ID = data.id;
-          } else if (event === "thread.message.delta") {
-            data.delta.content?.map((part) => {
-              if (part.type === "text") {
-                if (part.text) {
-                  textStream.append(part.text.value as string);
-                }
-              }
-            });
-          } else if (event === "thread.run.failed") {
-            console.error(data);
-            throw Error(data.last_error?.message);
-          }
-        }
-      }
-    }
+    await processRunQueue(runQueue, textStream, statusStream);
     textStream.done();
+    statusStream.done();
+    textUIStream.done();
   })();
 
   return {
@@ -96,7 +54,7 @@ export async function submitMessage(
       text: textUIStream.value,
       role: "assistant",
     },
-    threadId: newTheadId,
+    threadId: newThreadId,
   };
 }
 
@@ -124,7 +82,9 @@ export async function searchConversationHistory(
   return conversations;
 }
 
-export async function conversationMessages(conversationId: string) {
+export async function conversationMessages(
+  conversationId: string,
+): Promise<{ messages: ClientMessage[]; threadId: string }> {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw Error("Operation is not allowed; you need to authenticate first.");
@@ -143,35 +103,28 @@ export async function conversationMessages(conversationId: string) {
     throw Error("You don't belong to this conversation!.");
   }
 
-  const messages = await prismaDB.copilotConversationMessage.findMany({
-    where: {
-      conversationId: conversationId,
-    },
+  const threadMessages = await openai.beta.threads.messages.list(
+    converstation.threadId,
+  );
+
+  const messages = threadMessages.data.map((message) => {
+    let textContent = "";
+    message.content.forEach((part: any) => {
+      if (part.type === "text" && part.text) {
+        textContent = (textContent + part.text.value) as string;
+      }
+    });
+
+    return {
+      id: message.id,
+      text: textContent,
+      role: message.role,
+    };
   });
 
-  return messages;
-}
-
-async function saveMessageToConversation(
-  conversationId: string,
-  message: string,
-  role: string,
-  finishReason: string | null = null,
-  promptTokens: number | null = null,
-  completionTokens: number | null = null,
-  totalTokens: number | null = null,
-) {
-  await prismaDB.copilotConversationMessage.create({
-    data: {
-      conversationId,
-      message,
-      role,
-      finishReason,
-      promptTokens,
-      completionTokens,
-      totalTokens,
-    },
-  });
+  console.log(`Debugging`);
+  console.log(messages);
+  return { messages: messages, threadId: converstation.threadId };
 }
 
 function getEventStatus(event: string) {
@@ -184,5 +137,126 @@ function getEventStatus(event: string) {
 
     default:
       return "Thinking...";
+  }
+}
+
+async function handleExistingThread(
+  threadId: string,
+  assistantId: string,
+  question: string,
+  runQueue: any[],
+) {
+  const message = await openai.beta.threads.messages.create(threadId, {
+    role: "user",
+    content: question,
+  });
+
+  const run = await openai.beta.threads.runs.create(message.thread_id, {
+    assistant_id: assistantId,
+    stream: true,
+  });
+
+  runQueue.push({ id: generateId(), run });
+}
+
+async function handleNewThread(
+  projectId: string,
+  assistantId: string,
+  question: string,
+  runQueue: any[],
+) {
+  const userId = await authenticateAndAuthorize(projectId);
+  const thread = await openai.beta.threads.create();
+  await openai.beta.threads.messages.create(thread.id, {
+    role: "user",
+    content: question,
+  });
+  const run = await openai.beta.threads.runs.create(thread.id, {
+    assistant_id: assistantId,
+    stream: true,
+  });
+
+  await prismaDB.copilotThread.create({
+    data: {
+      projectId: projectId,
+      threadId: thread.id,
+      title: question.slice(0, 40),
+      userId: userId,
+    },
+  });
+
+  runQueue.push({ id: generateId(), run });
+  return thread.id;
+}
+
+async function authenticateAndAuthorize(projectId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw new Error(
+      "Operation is not allowed; you need to authenticate first.",
+    );
+  }
+
+  const project = await prismaDB.project.findFirst({
+    where: { id: projectId },
+  });
+
+  if (!project) {
+    throw new Error("Cannot find project with the provided id.");
+  }
+
+  const hasCopilotCreateAccess = hasAccess({
+    projectId,
+    scope: "copilot:create",
+    session,
+  });
+
+  if (!hasCopilotCreateAccess) {
+    throw new Error("Operation is not allowed; you don't have authorization.");
+  }
+
+  return session.user.id;
+}
+
+async function processRunQueue(
+  runQueue: any[],
+  textStream: any,
+  statusStream: any,
+) {
+  while (runQueue.length > 0) {
+    const latestRun = runQueue.shift();
+
+    if (latestRun) {
+      for await (const delta of latestRun.run) {
+        processDeltaEvent(delta, textStream, statusStream);
+      }
+    }
+  }
+}
+
+function processDeltaEvent(delta: any, textStream: any, statusStream: any) {
+  const { data, event } = delta;
+  const eventStatus = getEventStatus(event);
+  statusStream.update(eventStatus);
+
+  switch (event) {
+    case "thread.created":
+      break;
+
+    case "thread.run.created":
+      // Handle run creation if needed
+      break;
+    case "thread.message.delta":
+      data.delta.content?.forEach((part: any) => {
+        if (part.type === "text" && part.text) {
+          textStream.append(part.text.value as string);
+        }
+      });
+      break;
+    case "thread.run.failed":
+      console.error(data);
+      throw new Error(data.last_error?.message);
+    default:
+      break;
   }
 }
