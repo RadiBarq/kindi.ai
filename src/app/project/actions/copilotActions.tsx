@@ -105,6 +105,7 @@ export async function conversationMessages(
 
   const threadMessages = await openai.beta.threads.messages.list(
     converstation.threadId,
+    { order: "asc" },
   );
 
   const messages = threadMessages.data.map((message) => {
@@ -122,8 +123,6 @@ export async function conversationMessages(
     };
   });
 
-  console.log(`Debugging`);
-  console.log(messages);
   return { messages: messages, threadId: converstation.threadId };
 }
 

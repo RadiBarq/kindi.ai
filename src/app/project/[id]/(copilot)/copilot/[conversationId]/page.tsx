@@ -3,7 +3,6 @@ import { hasAccess } from "@/lib/user/projectAccess";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { getProject } from "@/app/project/actions/projectActions";
-import { CoreMessage } from "ai";
 import { conversationMessages } from "@/app/project/actions/copilotActions";
 import ErrorMessage from "@/components/misc/Error";
 
