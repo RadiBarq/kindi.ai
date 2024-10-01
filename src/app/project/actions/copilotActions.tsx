@@ -29,25 +29,26 @@ export async function submitMessage(
 
   // Initialize newThreadId
   let newThreadId = threadId ?? "";
+  if (threadId) {
+    await handleExistingThread(threadId, assistantId, question, runQueue);
+  } else {
+    console.log("test");
+    newThreadId = await handleNewThread(
+      projectId,
+      assistantId,
+      question,
+      runQueue,
+    );
+  }
 
   (async () => {
-    if (threadId) {
-      await handleExistingThread(threadId, assistantId, question, runQueue);
-    } else {
-      newThreadId = await handleNewThread(
-        projectId,
-        assistantId,
-        question,
-        runQueue,
-      );
-    }
-
     await processRunQueue(runQueue, textStream, statusStream);
     textStream.done();
     statusStream.done();
     textUIStream.done();
   })();
 
+  console.log(`New thread is: ${newThreadId}`);
   return {
     message: {
       id: generateId(),
@@ -166,6 +167,7 @@ async function handleNewThread(
 ) {
   const userId = await authenticateAndAuthorize(projectId);
   const thread = await openai.beta.threads.create();
+  console.log(`Debugging ${thread.id}`);
   await openai.beta.threads.messages.create(thread.id, {
     role: "user",
     content: question,
@@ -174,6 +176,8 @@ async function handleNewThread(
     assistant_id: assistantId,
     stream: true,
   });
+
+  runQueue.push({ id: generateId(), run });
 
   await prismaDB.copilotThread.create({
     data: {
@@ -184,7 +188,6 @@ async function handleNewThread(
     },
   });
 
-  runQueue.push({ id: generateId(), run });
   return thread.id;
 }
 

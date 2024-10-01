@@ -5,11 +5,11 @@ import { Triangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@/components/ui/evervault-card";
 import { EvervaultCard } from "@/components/ui/evervault-card";
-import { type CoreMessage } from "ai";
 import ClientMessage from "../_types/clientMessage";
 import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
 import { FormEvent, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { submitMessage } from "@/app/project/actions/copilotActions";
 import { Button } from "@/components/ui/button";
 const CopilotMenu = dynamic(() => import("./CopilotMenu"), { ssr: false });
@@ -35,9 +35,10 @@ export default function AICopilot({
   existingMessages,
 }: AICopilotProps) {
   const [currentThreadId, setCurrentThreadId] = useState(threadId);
+  const router = useRouter();
+  const pathname = usePathname();
   const [messages, setMessages] = useState<ClientMessage[]>(existingMessages);
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<String | null>(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialMessage = "Hello! I am Kindi How can I assist you today?";
@@ -48,15 +49,9 @@ export default function AICopilot({
     ? "Chat with Kindi"
     : "You don't have access to talk with Kindi";
 
-  const isMessageLoading = (message: ClientMessage) => {
-    console.log(message.text);
-    return (message.text as string) === "";
-  };
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setInput("");
-    setIsLoading(true);
     setError(null);
     setSubmitDisabled(true);
     setMessages((currentMessages) => [
@@ -77,23 +72,20 @@ export default function AICopilot({
         assistantId,
       );
 
-      console.log(`Thread id is: ${threadId}`);
-
       setMessages((currentMessages) => [...currentMessages, message]);
-
-      setIsLoading(false);
       setCurrentThreadId(threadId);
       setSubmitDisabled(false);
     } catch (error: any) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+
       console.error(error);
-      setError(error.message);
-      setIsLoading(false);
       setSubmitDisabled(false);
     }
   };
 
   const handleRetry = async () => {
-    setIsLoading(true);
     setError(null);
     setSubmitDisabled(true);
 
@@ -105,15 +97,28 @@ export default function AICopilot({
         assistantId,
       );
       setMessages((currentMessages) => [...currentMessages, message]);
-      setIsLoading(false);
       setCurrentThreadId(threadId);
       setSubmitDisabled(false);
     } catch (error: any) {
       console.error(error);
       setError(error.message);
-      setIsLoading(false);
+
       setSubmitDisabled(false);
     }
+  };
+
+  const handleNewChat = async () => {
+    if (pathname !== `/project/${projectId}`) {
+      router.push(`/project/${projectId}`);
+      return;
+    }
+
+    setInput("");
+    setError("");
+    setSubmitDisabled(false);
+    setMessages([]);
+    setCurrentThreadId(null);
+    setConversationsHistory([]);
   };
 
   useEffect(() => {
@@ -148,6 +153,7 @@ export default function AICopilot({
       <CopilotMenu
         conversationsHistory={conversationsHistory}
         projectId={projectId}
+        onClickNewChat={handleNewChat}
       />
       <div className="relative top-32 mx-auto w-full border border-black/[0.2] px-4 py-16 dark:border-white/[0.2] md:px-16 lg:top-0 lg:max-w-4xl">
         <Icon className="-left-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
@@ -253,20 +259,3 @@ export default function AICopilot({
     </div>
   );
 }
-// function MessageLoading() {
-//   return (
-//     <div className="flex self-start">
-//       <Image
-//         src={logo}
-//         alt="Kindi Avatar"
-//         className="mr-3 rounded-full"
-//         width={40}
-//         height={40}
-//       />
-//       <span className="relative flex h-4 w-4">
-//         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-900 opacity-75"></span>
-//         <span className="relative inline-flex h-4 w-4 rounded-full bg-gray-900"></span>
-//       </span>
-//     </div>
-//   );
-// }

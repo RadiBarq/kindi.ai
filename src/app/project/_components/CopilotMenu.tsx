@@ -1,4 +1,4 @@
-import { History } from "lucide-react";
+import { History, Plus } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -6,25 +6,40 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Brain } from "lucide-react";
+import Link from "next/link";
 import CopilotHistoryList from "./CopilotHistoryList";
 import ConversationHistory from "../_types/conversationHistory";
 
 interface CopilotMenuProps {
   projectId: string;
   conversationsHistory: ConversationHistory[] | null;
+  onClickNewChat: () => void;
 }
 
 export default function CopilotMenu({
   projectId,
   conversationsHistory,
+  onClickNewChat,
 }: CopilotMenuProps) {
   return (
     <Popover>
       <div className="fixed z-10 flex flex-row items-center justify-center  gap-4 rounded bg-white  px-2 py-2   lg:flex-col lg:border lg:border-gray-200 lg:shadow-md lg:shadow-gray-200">
+        <div className="w-full">
+          <Link href={`/project/${projectId}`}>
+            <Button
+              onClick={() => onClickNewChat()}
+              variant="outline"
+              className="flex w-full justify-start gap-2 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+            >
+              <Plus className="h-5 w-5" />
+              New chat
+            </Button>
+          </Link>
+        </div>
         <PopoverTrigger className="w-full">
           <Button
             variant="outline"
-            className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+            className="flex w-full items-center justify-start gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
           >
             <History className="h-5 w-5" />
             History
@@ -33,7 +48,7 @@ export default function CopilotMenu({
         <PopoverTrigger className="w-full">
           <Button
             variant="outline"
-            className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+            className="flex w-full items-center justify-start gap-3 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
           >
             <Brain className="h-5 w-5" />
             Model
