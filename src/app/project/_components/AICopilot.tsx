@@ -14,6 +14,7 @@ import { submitMessage } from "@/app/project/actions/copilotActions";
 import { Button } from "@/components/ui/button";
 const CopilotMenu = dynamic(() => import("./CopilotMenu"), { ssr: false });
 import { useEffect } from "react";
+import { generateId } from "ai";
 import { searchConversationHistory } from "@/app/project/actions/copilotActions";
 import ConversationHistory from "../_types/conversationHistory";
 
@@ -51,28 +52,41 @@ export default function AICopilot({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const newMessageId = generateId();
     setInput("");
     setError(null);
     setSubmitDisabled(true);
     setMessages((currentMessages) => [
       ...currentMessages,
       {
-        id: "123",
+        id: generateId(),
         status: "user.message.created",
         text: input,
         gui: null,
         role: "user",
       },
+      {
+        id: newMessageId,
+        status: "user.message.created",
+        text: null,
+        gui: null,
+        role: "assistant",
+      },
     ]);
+
     try {
       const { message, threadId } = await submitMessage(
+        newMessageId,
         input,
         currentThreadId,
         projectId,
         assistantId,
       );
 
-      setMessages((currentMessages) => [...currentMessages, message]);
+      setMessages((currentMessages) => [
+        ...currentMessages.filter((m) => m.id !== newMessageId),
+        message,
+      ]);
       setCurrentThreadId(threadId);
       setSubmitDisabled(false);
     } catch (error: any) {
@@ -91,6 +105,7 @@ export default function AICopilot({
 
     try {
       const { message, threadId } = await submitMessage(
+        generateId(),
         input,
         currentThreadId,
         projectId,
@@ -190,15 +205,18 @@ export default function AICopilot({
                     height={40}
                   />
                 )}
-                <div
-                  className={`whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md ${
-                    message.role === "user"
-                      ? "bg-black text-white shadow-gray-600"
-                      : "bg-white bg-opacity-60 text-gray-900 shadow-gray-200"
-                  }`}
-                >
-                  {message.text}
-                </div>
+                {!message.text && <MessageLoading />}
+                {message.text && (
+                  <div
+                    className={`whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md ${
+                      message.role === "user"
+                        ? "bg-black text-white shadow-gray-600"
+                        : "bg-white bg-opacity-60 text-gray-900 shadow-gray-200"
+                    }`}
+                  >
+                    {message.text}
+                  </div>
+                )}
               </div>
             ))}
 
@@ -256,6 +274,17 @@ export default function AICopilot({
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+function MessageLoading() {
+  return (
+    <div className="flex self-start">
+      <span className="relative flex h-4 w-4">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-300 opacity-90"></span>
+        <span className="relative inline-flex h-4 w-4 rounded-full bg-gray-300"></span>
+      </span>
     </div>
   );
 }

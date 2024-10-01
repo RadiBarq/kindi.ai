@@ -9,9 +9,9 @@ import { generateId } from "ai";
 import { createStreamableUI, createStreamableValue } from "ai/rsc";
 import prismaDB from "@/lib/db/prisma";
 import { Message } from "../_components/message";
-import { threadId } from "worker_threads";
 
 export async function submitMessage(
+  messageId: string,
   question: string,
   threadId: string | null,
   projectId: string,
@@ -51,7 +51,7 @@ export async function submitMessage(
   console.log(`New thread is: ${newThreadId}`);
   return {
     message: {
-      id: generateId(),
+      id: messageId,
       text: textUIStream.value,
       role: "assistant",
     },

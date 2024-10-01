@@ -2,6 +2,6 @@ import { ReactNode } from "react";
 
 export default interface ClientMessage {
   id: string;
-  text: ReactNode;
+  text?: ReactNode;
   role: string;
 }
