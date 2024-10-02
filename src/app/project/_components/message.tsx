@@ -22,10 +22,11 @@ export function Message({ textStream, statusStream }: MessageProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex w-full max-w-4xl flex-col flex-wrap gap-4">
       {text && (
-        <div className="overflow-hidden whitespace-pre-wrap">
+        <div className="flex w-full max-w-[250px] flex-wrap overflow-hidden whitespace-pre-wrap sm:max-w-md md:max-w-lg lg:max-w-lg xl:max-w-4xl">
           <ReactMarkdown
+            className="w-full whitespace-pre-wrap"
             components={{
               code({ node, inline, className, children, ...props }: any) {
                 const match = /language-(\w+)/.exec(className || "");
@@ -35,6 +36,7 @@ export function Message({ textStream, statusStream }: MessageProps) {
                     style={solarizedLight}
                     PreTag="div"
                     language={match[1]}
+                    wrapLines={true}
                     {...props}
                   >
                     {String(children).replace(/\n$/, "")}

@@ -25,7 +25,7 @@ export default async function Conversations({
     const project = await getProject(projectId);
     const { messages, threadId } = await conversationMessages(conversationId);
     return (
-      <div className="mx-auto flex min-h-screen w-full flex-col lg:py-24">
+      <div className="mx-auto flex min-h-screen w-full flex-col lg:py-24 ">
         <AICopilot
           hasCopilotCreateAccess={hasCopilotCreateAccess}
           projectId={projectId}

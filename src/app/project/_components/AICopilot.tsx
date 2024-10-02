@@ -8,7 +8,7 @@ import { EvervaultCard } from "@/components/ui/evervault-card";
 import ClientMessage from "../_types/clientMessage";
 import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
-import { FormEvent, useState } from "react";
+import { FormEvent, ChangeEvent, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { submitMessage } from "@/app/project/actions/copilotActions";
 import { Button } from "@/components/ui/button";
@@ -136,6 +136,12 @@ export default function AICopilot({
     setConversationsHistory([]);
   };
 
+  const onInputChage = (event: ChangeEvent<HTMLInputElement>) => {
+    const question = event.target.value;
+    setSubmitDisabled(question === "");
+    setInput(question);
+  };
+
   useEffect(() => {
     const fetchConversationsHistory = async () => {
       try {
@@ -164,18 +170,18 @@ export default function AICopilot({
   }, [threadId]);
 
   return (
-    <div className="flex flex-col lg:flex-row">
+    <div className="flex w-full flex-col px-2 lg:mt-4 lg:flex-row ">
       <CopilotMenu
         conversationsHistory={conversationsHistory}
         projectId={projectId}
         onClickNewChat={handleNewChat}
       />
-      <div className="relative top-32 mx-auto w-full border border-black/[0.2] px-4 py-16 dark:border-white/[0.2] md:px-16 lg:top-0 lg:max-w-4xl">
+      <div className="relative top-32 mx-auto w-full border border-black/[0.2] px-4 py-16 dark:border-white/[0.2] md:max-w-6xl md:px-16 lg:top-0 ">
         <Icon className="-left-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-bottom-3 -left-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-right-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-bottom-3 -right-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
-        <div className="flex w-full max-w-7xl flex-col gap-4">
+        <div className="flex w-full flex-col gap-4">
           {messages.length === 0 && (
             <div className="flex w-full justify-center text-xl font-medium">
               <EvervaultCard
@@ -188,11 +194,11 @@ export default function AICopilot({
             </div>
           )}
 
-          <div className="flex w-full flex-col items-start justify-center gap-6">
+          <div className="flex w-full flex-col items-start gap-6">
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex max-w-xl items-start ${
+                className={`flex items-start md:max-w-6xl ${
                   message.role === "user" ? "self-end" : "self-start"
                 }`}
               >
@@ -208,10 +214,10 @@ export default function AICopilot({
                 {!message.text && <MessageLoading />}
                 {message.text && (
                   <div
-                    className={`whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md ${
+                    className={`w-full max-w-4xl whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md ${
                       message.role === "user"
                         ? "bg-black text-white shadow-gray-600"
-                        : "prose-pre:bg-gray-200 prose bg-white bg-opacity-60 text-gray-900 shadow-gray-200 "
+                        : "prose-pre:bg-slate-400  prose bg-white bg-opacity-60 text-gray-900 shadow-gray-200 "
                     }`}
                   >
                     {message.text}
@@ -219,8 +225,6 @@ export default function AICopilot({
                 )}
               </div>
             ))}
-
-            {/* {isLoading && <MessageLoading />} */}
 
             {error && (
               <div className="items- flex w-full max-w-xs flex-col gap-4">
@@ -257,7 +261,7 @@ export default function AICopilot({
                   className="h-11 w-full rounded-3xl bg-white bg-opacity-60 pr-10 text-gray-900 shadow-md shadow-gray-200"
                   value={input}
                   placeholder={inputPlaceholder}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={onInputChage}
                 />
 
                 {hasCopilotCreateAccess && (
