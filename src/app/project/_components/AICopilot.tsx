@@ -211,7 +211,7 @@ export default function AICopilot({
                     className={`whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md ${
                       message.role === "user"
                         ? "bg-black text-white shadow-gray-600"
-                        : "bg-white bg-opacity-60 text-gray-900 shadow-gray-200"
+                        : "prose-pre:bg-gray-200 prose bg-white bg-opacity-60 text-gray-900 shadow-gray-200 "
                     }`}
                   >
                     {message.text}

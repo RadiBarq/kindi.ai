@@ -81,6 +81,7 @@ const config = {
   plugins: [
     require("tailwindcss-animate"),
     require("daisyui"),
+    require("@tailwindcss/typography"),
     addVariablesForColors,
     function ({ matchUtilities, theme }: any) {
       matchUtilities(

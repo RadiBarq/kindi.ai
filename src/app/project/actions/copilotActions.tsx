@@ -117,9 +117,23 @@ export async function conversationMessages(
       }
     });
 
+    const textStream = createStreamableValue(textContent);
+    const statusStream = createStreamableValue("");
+    const textUIStream = createStreamableUI(
+      <Message
+        textStream={textStream.value}
+        statusStream={statusStream.value}
+      />,
+    );
+
+    console.log(`Message role is ${message.role}`);
+
+    textStream.done();
+    statusStream.done();
+    textUIStream.done();
     return {
       id: message.id,
-      text: textContent,
+      text: textUIStream.value,
       role: message.role,
     };
   });
