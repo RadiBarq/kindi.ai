@@ -22,7 +22,7 @@ export function Message({ textStream, statusStream }: MessageProps) {
   };
 
   return (
-    <div className="flex w-full max-w-4xl flex-col flex-wrap gap-4">
+    <div className="flex w-full flex-col flex-wrap gap-4">
       {text && (
         <div className="flex w-full max-w-[250px] flex-wrap overflow-hidden whitespace-pre-wrap sm:max-w-md md:max-w-lg lg:max-w-lg xl:max-w-4xl">
           <ReactMarkdown

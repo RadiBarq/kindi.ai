@@ -176,7 +176,7 @@ export default function AICopilot({
         projectId={projectId}
         onClickNewChat={handleNewChat}
       />
-      <div className="relative top-32 mx-auto w-full border border-black/[0.2] px-4 py-16 dark:border-white/[0.2] md:max-w-6xl md:px-16 lg:top-0 ">
+      <div className="relative top-32 mx-auto w-full max-w-6xl border border-black/[0.2] px-4 py-16 dark:border-white/[0.2] md:max-w-xl md:px-16 lg:top-0   xl:max-w-3xl 2xl:max-w-6xl ">
         <Icon className="-left-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-bottom-3 -left-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-right-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
@@ -194,11 +194,11 @@ export default function AICopilot({
             </div>
           )}
 
-          <div className="flex w-full flex-col items-start gap-6">
+          <div className="flex w-full max-w-6xl flex-col items-start gap-6">
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex items-start md:max-w-6xl ${
+                className={`flex items-start  ${
                   message.role === "user" ? "self-end" : "self-start"
                 }`}
               >
@@ -214,7 +214,7 @@ export default function AICopilot({
                 {!message.text && <MessageLoading />}
                 {message.text && (
                   <div
-                    className={`w-full max-w-4xl whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md ${
+                    className={`w-full max-w-lg whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-4xl ${
                       message.role === "user"
                         ? "bg-black text-white shadow-gray-600"
                         : "prose-pre:bg-slate-400  prose bg-white bg-opacity-60 text-gray-900 shadow-gray-200 "
