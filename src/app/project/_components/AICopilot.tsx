@@ -13,7 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { submitMessage } from "@/app/project/actions/copilotActions";
 import { Button } from "@/components/ui/button";
 const CopilotMenu = dynamic(() => import("./CopilotMenu"), { ssr: false });
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { generateId } from "ai";
 import { searchConversationHistory } from "@/app/project/actions/copilotActions";
 import ConversationHistory from "../_types/conversationHistory";
@@ -43,6 +43,7 @@ export default function AICopilot({
   const [error, setError] = useState<String | null>(null);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialMessage = "Hello! I am Kindi How can I assist you today?";
+  const prevMessagesLength = useRef(messages.length);
   const [conversationsHistory, setConversationsHistory] = useState<
     ConversationHistory[] | null
   >(null);
@@ -142,32 +143,40 @@ export default function AICopilot({
     setInput(question);
   };
 
-  useEffect(() => {
-    const fetchConversationsHistory = async () => {
-      try {
-        const data = await searchConversationHistory(projectId, "");
-        const conversationsHistory: ConversationHistory[] = data.map((item) => {
-          return {
-            id: item.id,
-            name: item.title,
-          };
-        });
-        setConversationsHistory(conversationsHistory);
-      } catch (error) {
-        setConversationsHistory([]);
-        if (error instanceof Error) {
-          console.error(error.message);
-          return;
-        }
-        console.error(error);
+  const fetchConversationsHistory = async () => {
+    try {
+      const data = await searchConversationHistory(projectId, "");
+      const conversationsHistory: ConversationHistory[] = data.map((item) => {
+        return {
+          id: item.id,
+          name: item.title,
+        };
+      });
+      setConversationsHistory(conversationsHistory);
+    } catch (error) {
+      setConversationsHistory([]);
+      if (error instanceof Error) {
+        console.error(error.message);
+        return;
       }
-    };
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     fetchConversationsHistory();
   }, [projectId]);
 
   useEffect(() => {
     setCurrentThreadId(threadId);
   }, [threadId]);
+
+  useEffect(() => {
+    if (prevMessagesLength.current === 0 && messages.length > 0) {
+      fetchConversationsHistory();
+    }
+    prevMessagesLength.current = messages.length;
+  }, [messages]);
 
   return (
     <div className="flex w-full flex-col px-2 lg:mt-4 lg:flex-row ">
