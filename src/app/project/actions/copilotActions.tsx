@@ -78,6 +78,9 @@ export async function searchConversationHistory(
         mode: "insensitive",
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   return conversations;
