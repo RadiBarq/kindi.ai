@@ -44,7 +44,7 @@ export default function AICopilot({
   const [input, setInput] = useState("");
   const [error, setError] = useState<String | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [submitDisabled, setSubmitDisabled] = useState(true);
   const initialMessage = "Hello! I am Kindi How can I assist you today?";
   const prevMessagesLength = useRef(messages.length);
   const [conversationsHistory, setConversationsHistory] = useState<
