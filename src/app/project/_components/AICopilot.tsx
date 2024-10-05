@@ -8,7 +8,7 @@ import { EvervaultCard } from "@/components/ui/evervault-card";
 import ClientMessage from "../_types/clientMessage";
 import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
-import { FormEvent, ChangeEvent, useState } from "react";
+import { FormEvent, ChangeEvent, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { submitMessage } from "@/app/project/actions/copilotActions";
 import { Button } from "@/components/ui/button";
@@ -144,7 +144,7 @@ export default function AICopilot({
     setInput(question);
   };
 
-  const fetchConversationsHistory = async () => {
+  const fetchConversationsHistory = useCallback(async () => {
     try {
       const data = await searchConversationHistory(projectId, "");
       const conversationsHistory: ConversationHistory[] = data.map((item) => {
@@ -162,11 +162,11 @@ export default function AICopilot({
       }
       console.error(error);
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
     fetchConversationsHistory();
-  }, [projectId]);
+  }, [projectId, fetchConversationsHistory]);
 
   useEffect(() => {
     setCurrentThreadId(threadId);
@@ -183,7 +183,7 @@ export default function AICopilot({
       fetchConversationsHistory();
     }
     prevMessagesLength.current = messages.length;
-  }, [messages]);
+  }, [messages, fetchConversationsHistory]);
 
   return (
     <div className="flex w-full flex-col px-2 lg:mt-4 lg:flex-row ">
@@ -233,7 +233,7 @@ export default function AICopilot({
                     className={`w-full max-w-lg whitespace-pre-wrap rounded-2xl px-4 py-2 text-base shadow-md md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-4xl ${
                       message.role === "user"
                         ? "bg-black text-white shadow-gray-600"
-                        : "prose-pre:bg-slate-400  prose bg-white bg-opacity-60 text-gray-900 shadow-gray-200 "
+                        : "prose  bg-white bg-opacity-60 text-gray-900 shadow-gray-200 prose-pre:bg-slate-400 "
                     }`}
                   >
                     {message.text}
