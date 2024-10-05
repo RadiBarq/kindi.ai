@@ -17,6 +17,7 @@ import { useEffect, useRef } from "react";
 import { generateId } from "ai";
 import { searchConversationHistory } from "@/app/project/actions/copilotActions";
 import ConversationHistory from "../_types/conversationHistory";
+import { ChevronsDown } from "lucide-react";
 
 export const maxDuration = 30;
 
@@ -38,9 +39,11 @@ export default function AICopilot({
   const [currentThreadId, setCurrentThreadId] = useState(threadId);
   const router = useRouter();
   const pathname = usePathname();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<ClientMessage[]>(existingMessages);
   const [input, setInput] = useState("");
   const [error, setError] = useState<String | null>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
   const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialMessage = "Hello! I am Kindi How can I assist you today?";
   const prevMessagesLength = useRef(messages.length);
@@ -51,6 +54,41 @@ export default function AICopilot({
     ? "Chat with Kindi"
     : "You don't have access to talk with Kindi";
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const scrollToBottom = useCallback(() => {
+    if (messagesEndRef.current && messages.length !== 0) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  // Scroll to the bottom when messages changes or user scroll to bottom.
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  // This is to show the scroll bottom icon and observe if last message is visible or not.
+  useEffect(() => {
+    const current = messagesEndRef.current;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAtBottom(entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      },
+    );
+
+    if (current) {
+      observer.observe(current);
+    }
+
+    return () => {
+      if (current) {
+        observer.unobserve(current);
+      }
+    };
+  }, [messagesEndRef]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -186,18 +224,18 @@ export default function AICopilot({
   }, [messages, fetchConversationsHistory]);
 
   return (
-    <div className="flex w-full flex-col px-2 lg:mt-4 lg:flex-row ">
+    <div className="flex w-full flex-col px-2 lg:mt-4 lg:flex-row">
       <CopilotMenu
         conversationsHistory={conversationsHistory}
         projectId={projectId}
         onClickNewChat={handleNewChat}
       />
-      <div className="relative top-32 mx-auto w-full max-w-6xl border border-black/[0.2] px-4 py-16 dark:border-white/[0.2] md:max-w-xl md:px-16 lg:top-0   xl:max-w-3xl 2xl:max-w-6xl ">
+      <div className="relative top-32 mx-auto w-full max-w-6xl border border-black/[0.2] px-4 py-12 dark:border-white/[0.2] md:max-w-xl md:px-16 lg:top-0  xl:max-w-3xl 2xl:max-w-6xl ">
         <Icon className="-left-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-bottom-3 -left-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-right-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
         <Icon className="-bottom-3 -right-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
-        <div className="flex w-full flex-col gap-4">
+        <div className="flex  w-full flex-col gap-4">
           {messages.length === 0 && (
             <div className="flex w-full justify-center text-xl font-medium">
               <EvervaultCard
@@ -266,7 +304,20 @@ export default function AICopilot({
                 </Button>
               </div>
             )}
+            {/** Dummy div for scrolling */}
+            <div ref={messagesEndRef} className="invisible"></div>
           </div>
+          {/* Scroll to Bottom Button */}
+          {!isAtBottom && (
+            <button
+              className="fixed bottom-20 right-5 rounded-full bg-gray-200 p-2 shadow-lg"
+              onClick={() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              <ChevronsDown className="h-6 w-6 text-gray-900" />
+            </button>
+          )}
           <form
             onSubmit={handleSubmit}
             className="flex w-full  items-center justify-center"
