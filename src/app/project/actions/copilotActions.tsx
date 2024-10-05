@@ -17,17 +17,13 @@ export async function submitMessage(
   projectId: string,
   assistantId: string,
 ): Promise<{ message: ClientMessage; threadId: string }> {
-  // Create streams
   const textStream = createStreamableValue("");
   const statusStream = createStreamableValue("Thinking...");
   const textUIStream = createStreamableUI(
     <Message textStream={textStream.value} statusStream={statusStream.value} />,
   );
 
-  // Initialize runQueue
   const runQueue: any = [];
-
-  // Initialize newThreadId
   let newThreadId = threadId ?? "";
   if (threadId) {
     await handleExistingThread(threadId, assistantId, question, runQueue);
@@ -49,6 +45,7 @@ export async function submitMessage(
   })();
 
   console.log(`New thread is: ${newThreadId}`);
+  //throw Error('This is a new error')
   return {
     message: {
       id: messageId,
@@ -128,8 +125,6 @@ export async function conversationMessages(
         statusStream={statusStream.value}
       />,
     );
-
-    console.log(`Message role is ${message.role}`);
 
     textStream.done();
     statusStream.done();

@@ -134,30 +134,55 @@ export default function AICopilot({
         setError(error.message);
       }
 
+      setMessages((currentMessages) => [
+        ...currentMessages.filter((m) => m.id !== newMessageId),
+      ]);
       console.error(error);
       setSubmitDisabled(false);
     }
   };
 
-  const handleRetry = async () => {
+  const handleRetry = async (messageText: string) => {
     setError(null);
     setSubmitDisabled(true);
+    const newMessageId = generateId();
+
+    setMessages((currentMessages) => [
+      ...currentMessages,
+      {
+        id: newMessageId,
+        status: "user.message.created",
+        text: null,
+        gui: null,
+        role: "assistant",
+      },
+    ]);
 
     try {
       const { message, threadId } = await submitMessage(
-        generateId(),
-        input,
+        newMessageId,
+        messageText,
         currentThreadId,
         projectId,
         assistantId,
       );
-      setMessages((currentMessages) => [...currentMessages, message]);
+      setMessages((currentMessages) => [
+        ...currentMessages.filter((m) => m.id !== newMessageId),
+        message,
+      ]);
       setCurrentThreadId(threadId);
       setSubmitDisabled(false);
     } catch (error: any) {
-      console.error(error);
-      setError(error.message);
+      if (error instanceof Error) {
+        console.error(error.message);
+        setError(error.message);
+      } else {
+        console.error(error);
+      }
 
+      setMessages((currentMessages) => [
+        ...currentMessages.filter((m) => m.id !== newMessageId),
+      ]);
       setSubmitDisabled(false);
     }
   };
@@ -281,7 +306,7 @@ export default function AICopilot({
             ))}
 
             {error && (
-              <div className="items- flex w-full max-w-xs flex-col gap-4">
+              <div className="flex  flex-col gap-4">
                 <div className="flex self-start">
                   <Image
                     src={logo}
@@ -295,10 +320,11 @@ export default function AICopilot({
                   </div>
                 </div>
                 <Button
-                  onClick={() => handleRetry()}
-                  className="w-20 items-end"
+                  onClick={() =>
+                    handleRetry(messages[messages.length - 1].text as string)
+                  }
+                  className="w-20 self-end"
                   variant="outline"
-                  disabled={submitDisabled}
                 >
                   Retry
                 </Button>
