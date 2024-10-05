@@ -50,6 +50,7 @@ export default function AICopilot({
   const inputPlaceholder = hasCopilotCreateAccess
     ? "Chat with Kindi"
     : "You don't have access to talk with Kindi";
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -172,6 +173,12 @@ export default function AICopilot({
   }, [threadId]);
 
   useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
     if (prevMessagesLength.current === 0 && messages.length > 0) {
       fetchConversationsHistory();
     }
@@ -267,6 +274,7 @@ export default function AICopilot({
             <div className="fixed bottom-0 mb-8 flex w-3/4 items-center  lg:w-1/3">
               <div className="relative w-full ">
                 <Input
+                  ref={inputRef}
                   className="h-11 w-full rounded-3xl bg-white bg-opacity-60 pr-10 text-gray-900 shadow-md shadow-gray-200"
                   value={input}
                   placeholder={inputPlaceholder}
