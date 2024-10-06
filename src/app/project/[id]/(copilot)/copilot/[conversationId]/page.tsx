@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { getProject } from "@/app/project/actions/projectActions";
 import { conversationMessages } from "@/app/project/actions/copilotActions";
 import ErrorMessage from "@/components/misc/Error";
+import { openai } from "@/lib/openai";
 
 export default async function Conversations({
   params,
@@ -24,11 +25,15 @@ export default async function Conversations({
 
     const project = await getProject(projectId);
     const { messages, threadId } = await conversationMessages(conversationId);
+    const currentAssistant = await openai.beta.assistants.retrieve(
+      project.defaultAssistantId,
+    );
     return (
       <div className="mx-auto flex min-h-screen w-full flex-col lg:py-24 ">
         <AICopilot
           hasCopilotCreateAccess={hasCopilotCreateAccess}
           projectId={projectId}
+          modelName={currentAssistant.model}
           assistantId={project.defaultAssistantId}
           threadId={threadId}
           existingMessages={messages}

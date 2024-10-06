@@ -23,12 +23,15 @@ import { searchConversationHistory } from "@/app/project/actions/copilotActions"
 import ConversationHistory from "../_types/conversationHistory";
 import { ChevronsDown } from "lucide-react";
 import { readStreamableValue } from "ai/rsc";
+import { AIModel } from "@prisma/client";
+import { getAllModels } from "../actions/modelActions";
 
 export const maxDuration = 30;
 
 interface AICopilotProps {
   threadId: string | null;
   projectId: string;
+  modelName: string;
   hasCopilotCreateAccess: boolean;
   assistantId: string;
   existingMessages: ClientMessage[];
@@ -37,6 +40,7 @@ interface AICopilotProps {
 export default function AICopilot({
   threadId,
   projectId,
+  modelName,
   hasCopilotCreateAccess,
   assistantId,
   existingMessages,
@@ -57,9 +61,14 @@ export default function AICopilot({
   const [conversationsHistory, setConversationsHistory] = useState<
     ConversationHistory[] | null
   >(null);
+  const [aiModels, setAIModels] = useState<AIModel[] | null>(null);
+
   const inputPlaceholder = hasCopilotCreateAccess
     ? "Chat with Kindi"
     : "You don't have access to talk with Kindi";
+
+  console.log(`Model name is ${modelName}`);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -269,9 +278,27 @@ export default function AICopilot({
     }
   }, [projectId]);
 
+  const fetchAIModels = useCallback(async () => {
+    try {
+      const result = await getAllModels();
+      setAIModels(result);
+    } catch (error) {
+      setAIModels([]);
+      if (error instanceof Error) {
+        console.error(error.message);
+        return;
+      }
+      console.error(error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchConversationsHistory();
   }, [projectId, fetchConversationsHistory]);
+
+  useEffect(() => {
+    fetchAIModels();
+  }, [fetchAIModels]);
 
   useEffect(() => {
     setCurrentThreadId(threadId);
@@ -296,6 +323,8 @@ export default function AICopilot({
         conversationsHistory={conversationsHistory}
         projectId={projectId}
         onClickNewChat={handleNewChat}
+        aiModels={aiModels}
+        onModelChange={() => {}}
       />
       <div className="relative top-32 mx-auto w-full max-w-6xl border border-black/[0.2] px-4 py-12 dark:border-white/[0.2] md:max-w-xl md:px-16 lg:top-0  xl:max-w-3xl 2xl:max-w-6xl ">
         <Icon className="-left-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />

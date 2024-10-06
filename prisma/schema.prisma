@@ -115,6 +115,17 @@ model CopilotThread {
   @@map("copilot_threads")
 }
 
+model AIModel {
+  id          Int      @id @default(autoincrement())
+  name        String
+  title       String
+  description String
+  vendor      String // We currently only supports open ai but this added in case we support more models in the future.
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("ai_models")
+}
+
 enum ProjectRole {
   OWNER
   ADMIN

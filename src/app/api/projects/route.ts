@@ -6,6 +6,7 @@ import { ProjectRole } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { openai } from "@/lib/openai";
 import { z } from "zod";
+import { env } from "process";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -33,12 +34,12 @@ export async function POST(req: Request) {
     }
 
     const { projectName } = validation.data;
-
+    const defaultModel = process.env.OPENAI_DEFAULT_MODEL ?? "gpt-4o";
     const projectAssistant = await openai.beta.assistants.create({
       instructions: "",
       name: `${projectName} Default`,
       tools: [{ type: "code_interpreter" }, { type: "file_search" }],
-      model: "gpt-4o",
+      model: defaultModel,
     });
 
     const result = await prismaDB.$transaction(async (tx) => {
