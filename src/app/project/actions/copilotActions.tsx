@@ -6,7 +6,11 @@ import { hasAccess } from "@/lib/user/projectAccess";
 import ClientMessage from "../_types/clientMessage";
 import { openai } from "@/lib/openai";
 import { generateId } from "ai";
-import { createStreamableUI, createStreamableValue } from "ai/rsc";
+import {
+  createStreamableUI,
+  createStreamableValue,
+  StreamableValue,
+} from "ai/rsc";
 import prismaDB from "@/lib/db/prisma";
 import { Message } from "../_components/message";
 
@@ -16,9 +20,16 @@ export async function submitMessage(
   threadId: string | null,
   projectId: string,
   assistantId: string,
-): Promise<{ message: ClientMessage; threadId: string }> {
+): Promise<{
+  message: ClientMessage;
+  threadId: string;
+  streamStatus: StreamableValue<"pending" | "completed", any>;
+}> {
   const textStream = createStreamableValue("");
   const statusStream = createStreamableValue("Thinking...");
+  const streamStatus = createStreamableValue<"pending" | "completed">(
+    "pending",
+  );
   const textUIStream = createStreamableUI(
     <Message textStream={textStream.value} statusStream={statusStream.value} />,
   );
@@ -28,7 +39,6 @@ export async function submitMessage(
   if (threadId) {
     await handleExistingThread(threadId, assistantId, question, runQueue);
   } else {
-    console.log("test");
     newThreadId = await handleNewThread(
       projectId,
       assistantId,
@@ -42,10 +52,9 @@ export async function submitMessage(
     textStream.done();
     statusStream.done();
     textUIStream.done();
+    streamStatus.done("completed");
   })();
 
-  console.log(`New thread is: ${newThreadId}`);
-  //throw Error('This is a new error')
   return {
     message: {
       id: messageId,
@@ -53,6 +62,7 @@ export async function submitMessage(
       role: "assistant",
     },
     threadId: newThreadId,
+    streamStatus: streamStatus.value,
   };
 }
 
@@ -81,6 +91,21 @@ export async function searchConversationHistory(
   });
 
   return conversations;
+}
+
+export async function cancelRuns(threadId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    throw Error("Operation is not allowed; you need to authenticate first.");
+  }
+
+  const { data: runs } = await openai.beta.threads.runs.list(threadId);
+
+  for (const run of runs) {
+    if (run.status === "in_progress") {
+      await openai.beta.threads.runs.cancel(threadId, run.id);
+    }
+  }
 }
 
 export async function conversationMessages(
@@ -143,9 +168,17 @@ function getEventStatus(event: string) {
   switch (event) {
     case "thread.run.completed":
     case "thread.message.delta":
+    case "thread.message.incomplete":
     case "thread.message.completed":
     case "thread.run.step.completed":
       return "";
+
+    case "thread.run.cancelling":
+      return "Cancelling...";
+
+    case "thread.run.cancelled":
+    case "thread.run.step.cancelled":
+      return "Cancelled";
 
     default:
       return "Thinking...";
@@ -179,11 +212,11 @@ async function handleNewThread(
 ) {
   const userId = await authenticateAndAuthorize(projectId);
   const thread = await openai.beta.threads.create();
-  console.log(`Debugging ${thread.id}`);
   await openai.beta.threads.messages.create(thread.id, {
     role: "user",
     content: question,
   });
+
   const run = await openai.beta.threads.runs.create(thread.id, {
     assistant_id: assistantId,
     stream: true,
@@ -258,7 +291,6 @@ function processDeltaEvent(delta: any, textStream: any, statusStream: any) {
       break;
 
     case "thread.run.created":
-      // Handle run creation if needed
       break;
     case "thread.message.delta":
       data.delta.content?.forEach((part: any) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Triangle } from "lucide-react";
+import { Triangle, CirclePause } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@/components/ui/evervault-card";
 import { EvervaultCard } from "@/components/ui/evervault-card";
@@ -10,7 +10,11 @@ import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
 import { FormEvent, ChangeEvent, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { submitMessage } from "@/app/project/actions/copilotActions";
+import {
+  cancelRuns,
+  submitMessage,
+} from "@/app/project/actions/copilotActions";
+
 import { Button } from "@/components/ui/button";
 const CopilotMenu = dynamic(() => import("./CopilotMenu"), { ssr: false });
 import { useEffect, useRef } from "react";
@@ -18,6 +22,7 @@ import { generateId } from "ai";
 import { searchConversationHistory } from "@/app/project/actions/copilotActions";
 import ConversationHistory from "../_types/conversationHistory";
 import { ChevronsDown } from "lucide-react";
+import { readStreamableValue } from "ai/rsc";
 
 export const maxDuration = 30;
 
@@ -37,14 +42,16 @@ export default function AICopilot({
   existingMessages,
 }: AICopilotProps) {
   const [currentThreadId, setCurrentThreadId] = useState(threadId);
+  const [isStreaming, setIsStreaming] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [submitIsLoading, setSubmitIsLoading] = useState(false);
   const [messages, setMessages] = useState<ClientMessage[]>(existingMessages);
   const [input, setInput] = useState("");
   const [error, setError] = useState<String | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [submitDisabled, setSubmitDisabled] = useState(false);
   const initialMessage = "Hello! I am Kindi How can I assist you today?";
   const prevMessagesLength = useRef(messages.length);
   const [conversationsHistory, setConversationsHistory] = useState<
@@ -92,10 +99,20 @@ export default function AICopilot({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newMessageId = generateId();
+    setSubmitIsLoading(true);
+    setSubmitDisabled(true);
+
+    if (isStreaming) {
+      await cancelRuns(currentThreadId ?? "");
+      setIsStreaming(false);
+      setSubmitIsLoading(false);
+      setSubmitDisabled(false);
+      return;
+    }
+
     setInput("");
     setError(null);
-    setSubmitDisabled(true);
+    const newMessageId = generateId();
     setMessages((currentMessages) => [
       ...currentMessages,
       {
@@ -115,7 +132,7 @@ export default function AICopilot({
     ]);
 
     try {
-      const { message, threadId } = await submitMessage(
+      const { message, threadId, streamStatus } = await submitMessage(
         newMessageId,
         input,
         currentThreadId,
@@ -129,22 +146,35 @@ export default function AICopilot({
       ]);
       setCurrentThreadId(threadId);
       setSubmitDisabled(false);
+      setSubmitIsLoading(false);
+
+      // Set the stream status
+      for await (const statusFromStream of readStreamableValue(streamStatus)) {
+        if (statusFromStream === "completed") {
+          setIsStreaming(false);
+        } else {
+          setIsStreaming(true);
+        }
+      }
     } catch (error: any) {
       if (error instanceof Error) {
         setError(error.message);
+        console.error(error.message);
       }
 
       setMessages((currentMessages) => [
         ...currentMessages.filter((m) => m.id !== newMessageId),
       ]);
-      console.error(error);
       setSubmitDisabled(false);
+      setIsStreaming(false);
+      setSubmitIsLoading(false);
     }
   };
 
   const handleRetry = async (messageText: string) => {
     setError(null);
     setSubmitDisabled(true);
+    setSubmitIsLoading(true);
     const newMessageId = generateId();
 
     setMessages((currentMessages) => [
@@ -159,7 +189,7 @@ export default function AICopilot({
     ]);
 
     try {
-      const { message, threadId } = await submitMessage(
+      const { message, threadId, streamStatus } = await submitMessage(
         newMessageId,
         messageText,
         currentThreadId,
@@ -172,6 +202,16 @@ export default function AICopilot({
       ]);
       setCurrentThreadId(threadId);
       setSubmitDisabled(false);
+      setSubmitIsLoading(false);
+
+      // Set the stream status
+      for await (const statusFromStream of readStreamableValue(streamStatus)) {
+        if (statusFromStream === "completed") {
+          setIsStreaming(false);
+        } else {
+          setIsStreaming(true);
+        }
+      }
     } catch (error: any) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -183,7 +223,10 @@ export default function AICopilot({
       setMessages((currentMessages) => [
         ...currentMessages.filter((m) => m.id !== newMessageId),
       ]);
+
       setSubmitDisabled(false);
+      setIsStreaming(false);
+      setSubmitIsLoading(false);
     }
   };
 
@@ -203,7 +246,6 @@ export default function AICopilot({
 
   const onInputChage = (event: ChangeEvent<HTMLInputElement>) => {
     const question = event.target.value;
-    setSubmitDisabled(question === "");
     setInput(question);
   };
 
@@ -348,7 +390,7 @@ export default function AICopilot({
             onSubmit={handleSubmit}
             className="flex w-full  items-center justify-center"
           >
-            <div className="fixed bottom-0 mb-8 flex w-3/4 items-center  lg:w-1/3">
+            <div className="fixed bottom-0 mb-8 flex w-3/4 items-center lg:w-1/3">
               <div className="relative w-full ">
                 <Input
                   ref={inputRef}
@@ -361,10 +403,18 @@ export default function AICopilot({
                 {hasCopilotCreateAccess && (
                   <button
                     type="submit"
-                    disabled={submitDisabled}
+                    disabled={submitDisabled || (input === "" && !isStreaming)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-600 hover:text-gray-900 disabled:text-gray-400"
                   >
-                    <Triangle className="h-6 w-6 rotate-90" />
+                    {!isStreaming && !submitIsLoading && (
+                      <Triangle className="h-6 w-6 rotate-90" />
+                    )}
+                    {isStreaming && !submitIsLoading && (
+                      <CirclePause className="h-7 w-7 bg-white" />
+                    )}
+                    {submitIsLoading && (
+                      <span className="loading loading-spinner"></span>
+                    )}
                   </button>
                 )}
               </div>
