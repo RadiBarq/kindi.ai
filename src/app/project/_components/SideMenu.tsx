@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/main_logo@1x.svg";
-import { version } from "@/../package.json";
+import packageJson from "@/../package.json";
 import { Dialog } from "@/components/ui/dialog";
 import {
   Bot,
@@ -65,6 +65,7 @@ export default function SideMenu({
   user,
 }: SideMenuProps) {
   const rootPath = `/project/${projectId}`;
+  const { version } = packageJson;
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const [createProjectDialogOpen, setCreateProjectDialogOpen] = useState(false);
   const router = useRouter();

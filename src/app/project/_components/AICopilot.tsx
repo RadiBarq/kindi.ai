@@ -327,7 +327,7 @@ export default function AICopilot({
                   <Image
                     src={logo}
                     alt="Kindi Avatar"
-                    className="mr-3 rounded-full"
+                    className="mr-3 w-auto rounded-full"
                     width={40}
                     height={40}
                   />
@@ -353,7 +353,7 @@ export default function AICopilot({
                   <Image
                     src={logo}
                     alt="Kindi Avatar"
-                    className="mr-3 rounded-full"
+                    className="mr-3 w-auto rounded-full"
                     width={40}
                     height={40}
                   />
