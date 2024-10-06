@@ -3,7 +3,7 @@
 import { StreamableValue, useStreamableValue } from "ai/rsc";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { solarizedLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { oneLight } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 interface MessageProps {
   textStream: StreamableValue;
@@ -33,7 +33,7 @@ export function Message({ textStream, statusStream }: MessageProps) {
                 return !inline && match ? (
                   <SyntaxHighlighter
                     customStyle={customStyle}
-                    style={solarizedLight}
+                    style={oneLight}
                     PreTag="div"
                     language={match[1]}
                     wrapLines={true}
