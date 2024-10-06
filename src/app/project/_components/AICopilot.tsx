@@ -390,7 +390,7 @@ export default function AICopilot({
             onSubmit={handleSubmit}
             className="flex w-full  items-center justify-center"
           >
-            <div className="fixed bottom-0 mb-8 flex w-3/4 items-center lg:w-1/3">
+            <div className="fixed bottom-0 mb-8 flex w-3/4 max-w-xl items-center lg:w-1/3">
               <div className="relative w-full ">
                 <Input
                   ref={inputRef}

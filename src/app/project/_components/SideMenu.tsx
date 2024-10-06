@@ -95,7 +95,7 @@ export default function SideMenu({
           <CreateProjectDialog onProjectCreated={handleNewProjectCreated} />
         )}
         <div className="flex items-center justify-between">
-          <Image className="h-auto" src={logo} alt="Kindi AI Logo" width={45} />
+          <Image className="h-auto" src={logo} alt="Kindi AI Logo" width={45} priority />
           <span className="text-lg font-bold">Kindi AI</span>
           <span className="text-xs font-medium">v{version}</span>
         </div>
