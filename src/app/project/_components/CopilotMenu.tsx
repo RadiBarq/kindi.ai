@@ -49,7 +49,7 @@ export default function CopilotMenu({
   }, [selectedModelName, aiModels, getModelTitle]);
 
   return (
-    <div className="fixed z-10 flex w-40 flex-row items-center justify-center  gap-4 rounded bg-white px-2 py-2 lg:flex-col lg:border lg:border-gray-200 lg:shadow-md lg:shadow-gray-200">
+    <div className="fixed z-10 flex flex-row items-center justify-center gap-4  rounded bg-white px-2 py-2 lg:w-40 lg:flex-col lg:border lg:border-gray-200 lg:shadow-md lg:shadow-gray-200">
       <div className="w-full">
         <Link href={`/project/${projectId}`}>
           <Button
