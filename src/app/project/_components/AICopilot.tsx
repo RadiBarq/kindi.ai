@@ -46,6 +46,7 @@ export default function AICopilot({
   existingMessages,
 }: AICopilotProps) {
   const [currentThreadId, setCurrentThreadId] = useState(threadId);
+  const [selectedModelName, setSelectedModelName] = useState(modelName);
   const [isStreaming, setIsStreaming] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -324,7 +325,10 @@ export default function AICopilot({
         projectId={projectId}
         onClickNewChat={handleNewChat}
         aiModels={aiModels}
-        onModelChange={() => {}}
+        selectedModelName={selectedModelName}
+        onModelChange={(name) => {
+          setSelectedModelName(name);
+        }}
       />
       <div className="relative top-32 mx-auto w-full max-w-6xl border border-black/[0.2] px-4 py-12 dark:border-white/[0.2] md:max-w-xl md:px-16 lg:top-0  xl:max-w-3xl 2xl:max-w-6xl ">
         <Icon className="-left-3 -top-3 hidden h-6 w-6 text-black dark:text-white lg:absolute lg:block" />
