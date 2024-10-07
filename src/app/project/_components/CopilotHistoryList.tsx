@@ -70,7 +70,7 @@ export default function SearchList({
   };
 
   return (
-    <div className="mx-auto w-full max-w-sm space-y-4">
+    <div className="mx-auto w-full max-w-sm space-y-2">
       <form className="flex flex-row space-x-2" onSubmit={handleSearch}>
         <Input
           type="search"

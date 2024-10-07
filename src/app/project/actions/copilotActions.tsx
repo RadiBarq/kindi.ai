@@ -20,6 +20,7 @@ export async function submitMessage(
   threadId: string | null,
   projectId: string,
   assistantId: string,
+  modelName: string | null,
 ): Promise<{
   message: ClientMessage;
   threadId: string;
@@ -37,12 +38,13 @@ export async function submitMessage(
   const runQueue: any = [];
   let newThreadId = threadId ?? "";
   if (threadId) {
-    await handleExistingThread(threadId, assistantId, question, runQueue);
+    await handleExistingThread(threadId, assistantId, question, modelName, runQueue);
   } else {
     newThreadId = await handleNewThread(
       projectId,
       assistantId,
       question,
+      modelName,
       runQueue,
     );
   }
@@ -189,6 +191,7 @@ async function handleExistingThread(
   threadId: string,
   assistantId: string,
   question: string,
+  modelName: string | null,
   runQueue: any[],
 ) {
   const message = await openai.beta.threads.messages.create(threadId, {
@@ -199,6 +202,7 @@ async function handleExistingThread(
   const run = await openai.beta.threads.runs.create(message.thread_id, {
     assistant_id: assistantId,
     stream: true,
+    model: modelName,
   });
 
   runQueue.push({ id: generateId(), run });
@@ -208,6 +212,7 @@ async function handleNewThread(
   projectId: string,
   assistantId: string,
   question: string,
+  modelName: string | null,
   runQueue: any[],
 ) {
   const userId = await authenticateAndAuthorize(projectId);
@@ -220,6 +225,7 @@ async function handleNewThread(
   const run = await openai.beta.threads.runs.create(thread.id, {
     assistant_id: assistantId,
     stream: true,
+    model: modelName,
   });
 
   runQueue.push({ id: generateId(), run });

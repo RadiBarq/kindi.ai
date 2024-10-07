@@ -148,6 +148,7 @@ export default function AICopilot({
         currentThreadId,
         projectId,
         assistantId,
+        selectedModelName,
       );
 
       setMessages((currentMessages) => [
@@ -205,6 +206,7 @@ export default function AICopilot({
         currentThreadId,
         projectId,
         assistantId,
+        selectedModelName,
       );
       setMessages((currentMessages) => [
         ...currentMessages.filter((m) => m.id !== newMessageId),
