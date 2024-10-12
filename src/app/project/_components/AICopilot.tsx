@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Triangle, CirclePause } from "lucide-react";
+import { Triangle, CirclePause, CopyIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Icon } from "@/components/ui/evervault-card";
 import { EvervaultCard } from "@/components/ui/evervault-card";
@@ -22,9 +22,15 @@ import { generateId } from "ai";
 import { searchConversationHistory } from "@/app/project/actions/copilotActions";
 import ConversationHistory from "../_types/conversationHistory";
 import { ChevronsDown } from "lucide-react";
-import { readStreamableValue } from "ai/rsc";
+import { readStreamableValue, StreamableValue } from "ai/rsc";
 import { AIModel } from "@prisma/client";
 import { getAllModels } from "../actions/modelActions";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 export const maxDuration = 30;
 
@@ -295,6 +301,20 @@ export default function AICopilot({
     }
   }, []);
 
+  // This can be improved in the future by accumlating text for each message before clicking on the copy text.
+  const handleCopyText = async (textStream?: StreamableValue<string, any>) => {
+    if (!textStream) {
+      return;
+    }
+
+    let rawText = "";
+    for await (const chunk of readStreamableValue(textStream)) {
+      rawText = chunk ?? "";
+    }
+
+    await navigator.clipboard.writeText(rawText);
+  };
+
   useEffect(() => {
     fetchConversationsHistory();
   }, [projectId, fetchConversationsHistory]);
@@ -350,11 +370,11 @@ export default function AICopilot({
             </div>
           )}
 
-          <div className="flex w-full max-w-6xl flex-col items-start gap-6">
+          <div className="flex w-full max-w-6xl flex-col items-start gap-10">
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex items-start  ${
+                className={`flex items-start gap-2  ${
                   message.role === "user" ? "self-end" : "self-start"
                 }`}
               >
@@ -379,6 +399,25 @@ export default function AICopilot({
                     {message.text}
                   </div>
                 )}
+                {message.role === "assistant" &&
+                  ((!submitIsLoading &&
+                    !isStreaming &&
+                    message.id === messages[messages.length - 1].id) ||
+                    message.id !== messages[messages.length - 1].id) && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <CopyIcon
+                            onClick={() =>
+                              handleCopyText(message.rawTextStream)
+                            }
+                            className="h-4 w-4"
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>copy text</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
               </div>
             ))}
 
@@ -411,16 +450,19 @@ export default function AICopilot({
             <div ref={messagesEndRef} className="invisible"></div>
           </div>
           {/* Scroll to Bottom Button */}
-          {!isAtBottom && (
-            <button
-              className="fixed bottom-20 right-5 rounded-full bg-gray-200 p-2 shadow-lg"
-              onClick={() => {
-                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              <ChevronsDown className="h-6 w-6 text-gray-900" />
-            </button>
-          )}
+          <button
+            className={`fixed bottom-20 right-5 transform rounded-full bg-gray-200 p-2 shadow-lg transition-all duration-300 ${
+              isAtBottom
+                ? "pointer-events-none scale-0 opacity-0"
+                : "scale-100 opacity-100"
+            }`}
+            onClick={() => {
+              messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <ChevronsDown className="h-6 w-6 text-gray-900" />
+          </button>
+
           <form
             onSubmit={handleSubmit}
             className="flex w-full  items-center justify-center"

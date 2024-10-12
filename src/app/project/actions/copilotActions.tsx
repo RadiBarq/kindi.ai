@@ -38,7 +38,13 @@ export async function submitMessage(
   const runQueue: any = [];
   let newThreadId = threadId ?? "";
   if (threadId) {
-    await handleExistingThread(threadId, assistantId, question, modelName, runQueue);
+    await handleExistingThread(
+      threadId,
+      assistantId,
+      question,
+      modelName,
+      runQueue,
+    );
   } else {
     newThreadId = await handleNewThread(
       projectId,
@@ -62,6 +68,7 @@ export async function submitMessage(
       id: messageId,
       text: textUIStream.value,
       role: "assistant",
+      rawTextStream: textStream.value,
     },
     threadId: newThreadId,
     streamStatus: streamStatus.value,
@@ -160,6 +167,7 @@ export async function conversationMessages(
       id: message.id,
       text: textUIStream.value,
       role: message.role,
+      rawTextStream: textStream.value,
     };
   });
 
